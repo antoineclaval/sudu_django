@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
-from sudu.serializers import UserSerializer, GroupSerializer
+from sudu.serializers import UserSerializer, GroupSerializer, FestivalSerializer, FilmSerializer
+from cinema.models import Festival, Film
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -17,3 +18,17 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+
+class FestivalViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Festival.objects.all()
+    serializer_class = FestivalSerializer
+
+class FilmViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Film.objects.all()
+    serializer_class = FilmSerializer
