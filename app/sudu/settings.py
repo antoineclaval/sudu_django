@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(","
 
 INSTALLED_APPS = [
     'grappelli',
+    'cinema.apps.CinemaConfig',
     'django.contrib.admin',  
     'django.contrib.auth',
     'django.contrib.contenttypes',
