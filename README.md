@@ -34,12 +34,23 @@ DJANGO_SU_PASSWORD=unsecure \n"
 ```
 $ git clone git@github.com:antoineclaval/sudu_django.git
 $ cd sudu_django
-$ python -m venv env
+$ python3.x -m venv env
 $ source env/bin/activate
-$ cd app
-$ pip install -r requirements.txt
-$ python manage.py makemigrations
-$ docker-compose exec web python manage.py migrate --noinput
+```
+Be sure to have a sudu_django/.env.dev file created at this point. Then run:
+
+```
+$ $ docker-compose up -d --build
+```
+
+At this point, running docker ps should give you two running containers: sudu_django_web and postgres:12.0-alpine
+You can also access : http://localhost:8000/ and http://localhost:8000/admin
+Default admin creds : admin/unsecure
+
+## Faster install steps ( Pulling ready-made images from DockerHub )
+
+```
+docker push aclaval/sudu_django_web:latest
 ```
 
 ### Interact with the docker image
@@ -53,7 +64,8 @@ $ docker-compose exec web python manage.py migrate --noinput
 
 #### Django specific docker interaction 
 
-```docker-compose exec web python manage.py migrate --noinput```
+$ docker-compose exec web python manage.py makemigrations
+$ docker-compose exec web python manage.py migrate --noinput
 
 
 ## Docker schenanigans 
