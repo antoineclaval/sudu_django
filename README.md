@@ -1,15 +1,15 @@
 # Django Backoffice for www.sudu.film 
 
-## Install steps 
-
-### Prerequisite 
+## Prerequisite 
 
 - Python 3 
 - Docker client
 
-###
+## Install steps ( locally build docker image )
+
 ```
 $ git clone git@github.com:antoineclaval/sudu_django.git
+$ cd sudu_django
 $ python -m venv env
 $ source env/bin/activate
 $ cd app
@@ -17,7 +17,22 @@ $ pip install -r requirements.txt
 $ python manage.py makemigrations
 $ docker-compose exec web python manage.py migrate --noinput
 ```
-#### Notes : originals generation steps 
+
+### Interact with the docker image
+
+- The django process will restart the server and rebuild it at filechange.
+- See running logs : ```docker logs -f <ContainerID>```
+- Stop everything, keep the data : ```docker-compose down```
+- Stop everything and delete the volumes : ```docker-compose down -v```
+
+
+## Docker schenanigans 
+
+- See : build-docker.sh
+
+
+### Notes : originals generation steps 
+
 ```
 $ mkdir sudu_django
 $ cd sudu_django
@@ -29,3 +44,4 @@ $ source env/bin/activate
 (env)$ python manage.py runserver
 ```
 - See : https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx/
+
