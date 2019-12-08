@@ -29,7 +29,7 @@ DJANGO_SU_PASSWORD=unsecure \n"
 > .env.dev
 ```
 
-## Install steps ( locally build docker image )
+## install steps ( locally build docker image )
 
 ```
 $ git clone git@github.com:antoineclaval/sudu_django.git
@@ -40,20 +40,16 @@ $ source env/bin/activate
 Be sure to have a sudu_django/.env.dev file created at this point. Then run:
 
 ```
-$ $ docker-compose up -d --build
+$ docker-compose up -d --build
 ```
 
-At this point, running docker ps should give you two running containers: sudu_django_web and postgres:12.0-alpine
+After the last step, running ```docker ps``` should give you two running containers: ```sudu_django_web``` and ```postgres:12.0-alpine```
 You can also access : http://localhost:8000/ and http://localhost:8000/admin
 Default admin creds : admin/unsecure
 
-## Faster install steps ( Pulling ready-made images from DockerHub )
 
-```
-docker push aclaval/sudu_django_web:latest
-```
 
-### Interact with the docker image
+## Interact with the docker image
 
 - The django process will restart the server and rebuild it at filechange.
 - Exec arbitrary commands on container "web" from compose file : ```docker-compose exec web echo "LALALA" ```
