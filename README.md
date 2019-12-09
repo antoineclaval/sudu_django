@@ -60,8 +60,8 @@ Default admin creds : admin/unsecure
 
 #### Django specific docker interaction 
 
-$ docker-compose exec web python manage.py makemigrations
-$ docker-compose exec web python manage.py migrate --noinput
+- prepare DB  migration ```$ docker-compose exec web python manage.py makemigrations```
+- apply migration ```$ docker-compose exec web python manage.py migrate --noinput```
 
 ## Docker for prod
 ```
