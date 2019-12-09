@@ -26,20 +26,19 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = int(os.environ.get("DEBUG", default=0))
 ALLOWED_HOSTS = ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(",")
 
-
-
 # Application definition
 
 INSTALLED_APPS = [
     'grappelli',
     'cinema.apps.CinemaConfig',
-    'django.contrib.admin',  
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'imagekit',
 ]
 
 MIDDLEWARE = [

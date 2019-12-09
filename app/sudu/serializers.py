@@ -14,10 +14,12 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ['url', 'name']
 
+
 class FestivalSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Festival
-        fields = ['name', 'month_occurence', 'is_african', 'country' ]
+        fields = ['name', 'month_occurence', 'is_african', 'country']
+
 
 class FilmSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

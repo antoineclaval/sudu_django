@@ -63,6 +63,12 @@ Default admin creds : admin/unsecure
 $ docker-compose exec web python manage.py makemigrations
 $ docker-compose exec web python manage.py migrate --noinput
 
+## Docker for prod
+```
+$ docker-compose -f docker-compose.prod.yml down -v
+$ docker-compose -f docker-compose.prod.yml up -d --build
+$ docker-compose -f docker-compose.prod.yml exec web python manage.py migrate --noinput
+```
 
 ## Docker schenanigans 
 

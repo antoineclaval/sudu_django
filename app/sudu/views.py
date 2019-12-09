@@ -19,12 +19,14 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
+
 class FestivalViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
     queryset = Festival.objects.all()
     serializer_class = FestivalSerializer
+
 
 class FilmViewSet(viewsets.ModelViewSet):
     """
