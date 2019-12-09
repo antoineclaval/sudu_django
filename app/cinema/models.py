@@ -24,6 +24,21 @@ class Festival(models.Model):
 
 class Film(models.Model):
     name = models.CharField(max_length=200)
+    poster = models.ImageField(null=True, blank=True, upload_to="poster")
+    country = CountryField(blank=False, null=False, default="FR")
+    # real 
+    # Type ( Doc )
+    # AnneeProd
+    # Pays
+    # Description 
+    # langue
+    
+    # Palmares
+    # 	..
+
+    # Projection
+    # 	 date
+    # 	 Lieux
 
     def __str__(self):
     	return self.name

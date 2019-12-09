@@ -9,6 +9,7 @@ class FestivalAdmin(admin.ModelAdmin):
 
 class FilmAdmin(admin.ModelAdmin):
 	search_fields = ['name']
+    
 
 admin.site.register(Festival, FestivalAdmin)
 admin.site.register(Film, FilmAdmin)
