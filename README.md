@@ -54,6 +54,7 @@ Default admin creds : admin/unsecure
 - The django process will restart the server and rebuild it at filechange.
 - Exec arbitrary commands on container "web" from compose file : ```docker-compose exec web echo "LALALA" ```
 - See running logs : ```docker logs -f <ContainerID>```
+- Better see running logs : ```docker logs -f `docker ps -qf name=sudu_django_web` ```
 - Stop everything, keep the data : ```docker-compose down```
 - Stop everything and delete the volumes : ```docker-compose down -v```
 - Interative sh script session : ``docker exec -it <ContainerID> /bin/sh ``
@@ -72,6 +73,7 @@ $ docker-compose -f docker-compose.prod.yml exec web python manage.py migrate --
 
 ## Docker schenanigans 
 
+- get ID of running container. ```docker ps -qf name=sudu_django_web```
 - See : build-docker.sh
 
 
