@@ -1,6 +1,7 @@
 from django.db import models
 from django_countries.fields import CountryField
-
+from enum import Enum 
+import datetime
 
 class Festival(models.Model):
     name = models.CharField(max_length=200)
@@ -20,16 +21,23 @@ class Festival(models.Model):
     def __str__(self):
         return self.name
 
+class FilmTypeChoice(Enum):  
+    DOC = "Documentaire"
+    FICTION = "Fiction"
+    COURT = "Court-Métrage"
+
+YEAR_CHOICES = []
+for r in range(1980, (datetime.datetime.now().year+1)):
+    YEAR_CHOICES.append((r,r))
 
 class Film(models.Model):
     name = models.CharField(max_length=200)
     poster = models.ImageField(null=True, blank=True, upload_to="poster")
     country = CountryField(blank=False, null=False, default="FR")
-    # real
-    # Type ( Doc )
-    # AnneeProd
-    # Pays
-    # Description
+    director = models.CharField(max_length=80, null=False, blank=False, default="Unknow")
+    #filmType = models.CharField( default=FilmTypeChoice.FICTION , max_length=20, choices=[(tag, tag.value) for tag in FilmTypeChoice])  # Choices is a list of Tuple
+    productionYear = models.IntegerField(choices=YEAR_CHOICES, default=datetime.datetime.now().year)
+    description = models.TextField(null=True, blank=True)
     # langue
     # Palmares
     # 	..
@@ -39,3 +47,5 @@ class Film(models.Model):
 
     def __str__(self):
         return self.name
+
+
