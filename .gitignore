@@ -1,3 +1,4 @@
+.vscode
 app/env
 .env.dev
 .env.prod
