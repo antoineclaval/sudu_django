@@ -18,10 +18,11 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class FestivalSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Festival
-        fields = ['name', 'month_occurence', 'is_african', 'country']
-
+        fields = ['name', 'month_occurence', 'is_african', 'country',
+        'current_year_date','deadline_date','price','has_rental_fee',
+        'is_competitive','comments','support','link']
 
 class FilmSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Film
-        fields = ['name']
+        fields = ['name', 'poster', 'country', 'director', 'productionYear','description']
