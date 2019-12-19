@@ -40,6 +40,7 @@ $ source env/bin/activate
 Be sure to have a sudu_django/.env.dev file created at this point. Then run:
 
 ```
+$ set -a; source .env.dev; set +a
 $ docker-compose up -d --build
 ```
 
