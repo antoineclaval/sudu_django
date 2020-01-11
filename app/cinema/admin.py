@@ -4,6 +4,7 @@ from imagekit.admin import AdminThumbnail
 from .models import Festival
 from .models import Film
 from .models import Submission
+from .models import Projection
 
 
 class FestivalAdmin(admin.ModelAdmin):
@@ -21,8 +22,11 @@ class FilmAdmin(admin.ModelAdmin):
 class SubmissionAdmin(admin.ModelAdmin):
     search_fields = ['dateSent']
 
+class ProjectionAdmin(admin.ModelAdmin):
+    search_fields = ['location']
 
 
 admin.site.register(Festival, FestivalAdmin)
 admin.site.register(Film, FilmAdmin)
 admin.site.register(Submission, SubmissionAdmin)
+admin.site.register(Projection, ProjectionAdmin)

@@ -48,7 +48,7 @@ class Film(models.Model):
         return self.name
 
 class Submission(models.Model):
-    dateSent = models.DateTimeField('Periode', blank=True, null=True)
+    date = models.DateTimeField('Periode', blank=True, null=True)
     film = models.ForeignKey(Film, on_delete=models.CASCADE) 
     festival = models.ForeignKey(Festival, on_delete=models.CASCADE) 
     #Many to One Response
@@ -59,10 +59,11 @@ class Submission(models.Model):
 #     Date
 #     Yes/No
 
-# Projection 
-#     Date
-#     Location
-#     Film
-
+class Projection(models.Model): 
+    date = models.DateTimeField('Periode', blank=True, null=True)
+    location = models.CharField(max_length=200)
+    film = models.ForeignKey(Film, on_delete=models.CASCADE) 
+    def __str__(self):
+        return self.location
         
 
