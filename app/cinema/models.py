@@ -44,8 +44,25 @@ class Film(models.Model):
     # Projection
     # 	 date
     # 	 Lieux
-
     def __str__(self):
         return self.name
 
+class Submission(models.Model):
+    dateSent = models.DateTimeField('Periode', blank=True, null=True)
+    film = models.ForeignKey(Film, on_delete=models.CASCADE) 
+    festival = models.ForeignKey(Festival, on_delete=models.CASCADE) 
+    #Many to One Response
+    def __str__(self):
+        return '{} / {}'.format(self.film.name,self.festival.name) 
+
+# Response 
+#     Date
+#     Yes/No
+
+# Projection 
+#     Date
+#     Location
+#     Film
+
+        
 
