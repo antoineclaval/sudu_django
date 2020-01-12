@@ -25,10 +25,14 @@ class FestivalFilter(AutocompleteFilter):
     title = 'Festival' # display title
     field_name = 'festival' # name of the foreign key field
 
+class FilmFilter(AutocompleteFilter):
+    title = 'Film' # display title
+    field_name = 'film' # name of the foreign key field
+
 class SubmissionAdmin(admin.ModelAdmin):
-    search_fields = ['dateSent']
-    list_filter = [FestivalFilter]
-    autocomplete_fields = ['festival']
+    search_fields = ['dateSent', 'film', 'festival']
+    list_filter = [FestivalFilter, FilmFilter]
+    autocomplete_fields = ['festival', 'film']
     class Media:
         pass
 
