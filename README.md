@@ -48,8 +48,6 @@ After the last step, running ```docker ps``` should give you two running contain
 You can also access : http://localhost:8000/ and http://localhost:8000/admin
 Default admin creds : admin/unsecure
 
-
-
 ## Interact with the docker image
 
 - The django process will restart the server and rebuild it at filechange.
@@ -64,6 +62,13 @@ Default admin creds : admin/unsecure
 
 - prepare DB  migration ```$ docker-compose exec web python manage.py makemigrations```
 - apply migration ```$ docker-compose exec web python manage.py migrate --noinput```
+
+## Interact with the PostGres Instance
+
+Check that the 5432 port is mapped to the localmachine ( ```0.0.0.0:5432->5432/tcp``` in ```docker ps``` )
+
+- psql -h localhost -p 5432 -U sudu_django -d sudu_django_dev -W
+- \dt ( show tables ) 
 
 ## Docker for prod
 ```
