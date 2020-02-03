@@ -47,17 +47,20 @@ class Film(models.Model):
     def __str__(self):
         return self.name
 
+
+class ResponseChoice(Enum):  
+    SELECTIONED = "Selectionned"
+    REFUSED = "Refused"
+    NO_RESPONSE = "No response yet"
+
 class Submission(models.Model):
-    date = models.DateTimeField('Periode', blank=True, null=True)
+    dateSubmission = models.DateTimeField('Submission Date', blank=True, null=True)
     film = models.ForeignKey(Film, on_delete=models.CASCADE) 
     festival = models.ForeignKey(Festival, on_delete=models.CASCADE) 
-    #Many to One Response
+    response = models.CharField( default=ResponseChoice.NO_RESPONSE , max_length=30, choices=[(tag, tag.value) for tag in ResponseChoice])  
+    responseDate = models.DateTimeField('Response Date', blank=True, null=True)
     def __str__(self):
         return '{} / {}'.format(self.film.name,self.festival.name) 
-
-# Response 
-#     Date
-#     Yes/No
 
 class Projection(models.Model): 
     date = models.DateTimeField('Periode', blank=True, null=True)
