@@ -60,7 +60,7 @@ class ResponseChoice(Enum):
 MY_CHOICES = [('SELECTIONED', 'Selectionned'), ('REFUSED', 'Refused'), ('NO_RESPONSE','No response yet')]
 
 class Submission(models.Model):
-    dateSubmission = models.DateField('Submission Date', blank=True, null=True)
+    dateSubmission = models.DateField('Submission Date', blank=False, null=datetime.datetime.now())
     film = models.ForeignKey(Film, on_delete=models.CASCADE) 
     festival = models.ForeignKey(Festival, on_delete=models.CASCADE) 
     response = models.CharField( default='NO_RESPONSE' , max_length=30, choices=MY_CHOICES)  
