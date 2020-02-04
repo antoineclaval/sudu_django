@@ -18,6 +18,9 @@ class Festival(models.Model):
     support = models.CharField(max_length=200, blank=True, null=True)
     link = models.CharField(max_length=200, blank=True, null=True)
 
+    #Est Competitif YES/NO
+    # Location YES?NO
+
     def __str__(self):
         return self.name
 

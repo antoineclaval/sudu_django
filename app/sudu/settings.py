@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'imagekit',
+    'import_export',
     'django_extensions',
 ]
 

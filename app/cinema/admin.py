@@ -1,3 +1,4 @@
+from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from imagekit.admin import AdminThumbnail
 from admin_auto_filters.filters import AutocompleteFilter
@@ -9,7 +10,7 @@ from .models import Submission
 from .models import Projection
 
 
-class FestivalAdmin(admin.ModelAdmin):
+class FestivalAdmin(ImportExportModelAdmin):
     search_fields = ['name']
 
 
