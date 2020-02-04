@@ -53,11 +53,13 @@ class ResponseChoice(Enum):
     REFUSED = "Refused"
     NO_RESPONSE = "No response yet"
 
+MY_CHOICES = [('SELECTIONED', 'Selectionned'), ('REFUSED', 'Refused'), ('NO_RESPONSE','No response yet')]
+
 class Submission(models.Model):
     dateSubmission = models.DateTimeField('Submission Date', blank=True, null=True)
     film = models.ForeignKey(Film, on_delete=models.CASCADE) 
     festival = models.ForeignKey(Festival, on_delete=models.CASCADE) 
-    response = models.CharField( default=ResponseChoice.NO_RESPONSE , max_length=30, choices=[(tag, tag.value) for tag in ResponseChoice])  
+    response = models.CharField( default='NO_RESPONSE' , max_length=30, choices=MY_CHOICES)  
     responseDate = models.DateTimeField('Response Date', blank=True, null=True)
     def __str__(self):
         return '{} / {}'.format(self.film.name,self.festival.name) 
