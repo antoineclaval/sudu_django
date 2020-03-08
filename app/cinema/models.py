@@ -23,8 +23,8 @@ class Festival(models.Model):
     month_occurence = models.PositiveSmallIntegerField(choices=MONTHS.items(), null=True, blank=True)
     is_african = models.BooleanField(default=False)
     country = CountryField(blank=False, null=False, default="FR", countries=G8Countries)
-    current_year_date = models.DateField('Current year date', blank=True, null=True)
-    deadline_date = models.DateField('Deadline', blank=True, null=True)
+    current_year_date = models.CharField(max_length=50, blank=True, null=True) # too fuzzy for date as of now
+    deadline_date = models.CharField(max_length=50, blank=True, null=True) # too fuzzy for date as of now
     price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
     # fee = models.DecimalField()
     has_rental_fee = models.BooleanField(default=False)
