@@ -1,4 +1,14 @@
 from django.db import models
+from django_countries import Countries
+
+
+from django.utils.translation import gettext_lazy as _
+
+
+class G8Countries(Countries):
+    override = [
+        ('EU', _('European Union'))
+    ]
 
 
 class Language(models.Model):

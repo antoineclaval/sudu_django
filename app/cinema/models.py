@@ -1,14 +1,28 @@
 from django.db import models
 from django_countries.fields import CountryField
+from django_countries import Countries
+
 from enum import Enum 
 from django.utils.dates import MONTHS
 import datetime
 
+from django.utils.translation import gettext_lazy as _
+
+
+class G8Countries(Countries):
+    override = [
+        ('AN', _('Antilles')),
+        ('KO', _('Kosovo')),
+        ('RA', _('Republique d\'Abhkazia')),
+        ('WL', _('Wales')),
+    ]
+
 class Festival(models.Model):
     name = models.CharField(max_length=200)
+    #https://dustindavis.me/django-month_choices/
     month_occurence = models.PositiveSmallIntegerField(choices=MONTHS.items(), null=True, blank=True)
     is_african = models.BooleanField(default=False)
-    country = CountryField(blank=False, null=False, default="FR")
+    country = CountryField(blank=False, null=False, default="FR", countries=G8Countries)
     current_year_date = models.DateField('Current year date', blank=True, null=True)
     deadline_date = models.DateField('Deadline', blank=True, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
@@ -33,6 +47,8 @@ class FilmTypeChoice(Enum):
 YEAR_CHOICES = []
 for r in range(1980, (datetime.datetime.now().year+1)):
     YEAR_CHOICES.append((r,r))
+
+
 
 class Film(models.Model):
     name = models.CharField(max_length=200)
