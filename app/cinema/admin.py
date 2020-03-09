@@ -32,7 +32,7 @@ class FilmFilter(AutocompleteFilter):
 
 
 
-class SubmissionAdmin(admin.ModelAdmin):
+class SubmissionAdmin(ImportExportModelAdmin):
     search_fields = ['film__name', 'festival__name']
     list_display = ['festival', 'film', 'dateSubmission']
     #list_filter = [FestivalFilter, FilmFilter]
