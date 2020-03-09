@@ -17,20 +17,23 @@ class G8Countries(Countries):
         ('WL', _('Wales')),
     ]
 
+OCCURENCE_CHOICES = { 111: _('Year Round')}
+OCCURENCE_CHOICES.update(MONTHS)
+
 class Festival(models.Model):
     name = models.CharField(max_length=200)
     #https://dustindavis.me/django-month_choices/
-    month_occurence = models.PositiveSmallIntegerField(choices=MONTHS.items(), null=True, blank=True)
+    month_occurence = models.PositiveSmallIntegerField(choices=OCCURENCE_CHOICES.items(), null=True, blank=True)
     is_african = models.BooleanField(default=False)
-    country = CountryField(blank=False, null=False, default="FR", countries=G8Countries)
+    country = CountryField(blank=False, null=False, countries=G8Countries)
     current_year_date = models.CharField(max_length=50, blank=True, null=True) # too fuzzy for date as of now
     deadline_date = models.CharField(max_length=50, blank=True, null=True) # too fuzzy for date as of now
-    price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    price = models.CharField(max_length=100, blank=True, null=True)
     # fee = models.DecimalField()
     has_rental_fee = models.BooleanField(default=False)
     is_competitive = models.BooleanField(default=False)
     comments = models.CharField(max_length=500, blank=True, null=True)
-    support = models.CharField(max_length=200, blank=True, null=True)
+    support = models.CharField(max_length=600, blank=True, null=True)
     link = models.CharField(max_length=200, blank=True, null=True)
 
     #Est Competitif YES/NO

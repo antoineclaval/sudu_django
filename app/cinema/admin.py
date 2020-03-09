@@ -2,19 +2,19 @@ from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from imagekit.admin import AdminThumbnail
 from admin_auto_filters.filters import AutocompleteFilter
-
+from django_countries.filters import CountryFilter
 
 from .models import Festival
 from .models import Film
 from .models import Submission
 from .models import Projection
 
-
 class FestivalAdmin(ImportExportModelAdmin):
-    search_fields = ['name']
+    search_fields = ['name', 'country']
+    list_display = ['name', 'country', 'is_african', 'country', 'has_rental_fee', 'price']
 
 
-class FilmAdmin(admin.ModelAdmin):
+class FilmAdmin(ImportExportModelAdmin):
     search_fields = ['name']
     list_display = ['name', 'image_display']
     image_display = AdminThumbnail(image_field='poster')
@@ -30,9 +30,12 @@ class FilmFilter(AutocompleteFilter):
     title = 'Film' # display title
     field_name = 'film' # name of the foreign key field
 
+
+
 class SubmissionAdmin(admin.ModelAdmin):
-    search_fields = ['dateSent', 'film', 'festival']
-    list_filter = [FestivalFilter, FilmFilter]
+    search_fields = ['film__name', 'festival__name']
+    list_display = ['festival', 'film', 'dateSubmission']
+    #list_filter = [FestivalFilter, FilmFilter]
     autocomplete_fields = ['festival', 'film']
     class Media:
         pass
