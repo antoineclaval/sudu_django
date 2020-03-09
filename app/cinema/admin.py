@@ -30,12 +30,11 @@ class FilmFilter(AutocompleteFilter):
     title = 'Film' # display title
     field_name = 'film' # name of the foreign key field
 
-
-
 class SubmissionAdmin(ImportExportModelAdmin):
     search_fields = ['film__name', 'festival__name']
     list_display = ['festival', 'film', 'dateSubmission']
     #list_filter = [FestivalFilter, FilmFilter]
+
     autocomplete_fields = ['festival', 'film']
     class Media:
         pass
