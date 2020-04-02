@@ -38,8 +38,11 @@ router.register(r'films', views.FilmViewSet)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
+
     path('grappelli/', include('grappelli.urls')),  # grappelli URLS
     path('admin/', admin.site.urls),
+    path('cinema/', include('cinema.urls')),
+
     url(r'^', include(router.urls)),
     #url(r'^api-auth/', include('rest_framework.urls',namespace='rest_framework'))
 ]

@@ -3,7 +3,6 @@ from rest_framework import viewsets
 from sudu.serializers import UserSerializer, GroupSerializer, FestivalSerializer, FilmSerializer
 from cinema.models import Festival, Film
 
-
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
