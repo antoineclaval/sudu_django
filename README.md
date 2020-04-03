@@ -70,6 +70,11 @@ Check that the 5432 port is mapped to the localmachine ( ```0.0.0.0:5432->5432/t
 - psql -h localhost -p 5432 -U sudu_django -d sudu_django_dev -W
 - \dt ( show tables ) 
 
+## DB backup / restore 
+
+- Backup ```docker exec <containerID> pg_dump -U sudu_django sudu_django_dev > backup.sql```
+- Restore ```docker exec -i <containerID> psql -U sudu_django -d sudu_django_dev < backup.sql```
+
 ## Docker for prod
 ```
 $ docker-compose -f docker-compose.prod.yml down -v
