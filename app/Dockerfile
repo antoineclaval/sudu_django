@@ -8,17 +8,19 @@ WORKDIR /usr/src/app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# install psycopg2 & Pillow dependencies
+# install dependencies
+RUN pip install --upgrade pip
+
+# install psycopg2 & Pillow dependencies & python-docx
+
 RUN apk update \
-    && apk add --virtual build-deps gcc python3-dev musl-dev \
+    && apk add --virtual build-deps gcc python3-dev musl-dev libc-dev libxslt-dev \
     && apk add postgresql \
     && apk add postgresql-dev \
     && pip install psycopg2 \
-    && apk add jpeg-dev zlib-dev libjpeg 
+    && apk add jpeg-dev zlib-dev libjpeg \
+    && apk add libxslt
 
-
-# install dependencies
-RUN pip install --upgrade pip
 COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install -r requirements.txt
 
