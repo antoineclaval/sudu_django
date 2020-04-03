@@ -9,6 +9,7 @@ from .models import Film
 from .models import Submission
 from .models import Festival
 
+from docx import Document
 
 def image_upload(request):
     if request.method == "POST" and request.FILES["image_file"]:
@@ -36,9 +37,11 @@ def inscriptionByMonthAndFilm(request, month_id, year, film_id):
 
 
 def docxReport(request, month_id, year, film_id):
-    currentFilm =  Film.objects.get(id=film_id)
-    subList = Submission.objects.filter(dateSubmission__year=year).filter(dateSubmission__month=month_id).filter(film_id = film_id)
-    output = ', '.join([q.festival.name for q in subList])
-    print(output)
-    s = F'{month_id} - {currentFilm.name} \n {output}'
-    return HttpResponse(s)
+    document = Document()
+    document.add_heading('Document Title', 0)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename=download.docx'
+    document.save(response)
+
+    return response
