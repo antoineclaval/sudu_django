@@ -16,3 +16,4 @@ django-admin-autocomplete-filter==0.4
 django-import-export==2.0.1
 lxml>=3.5.0
 python-docx==0.8.10
+babel==2.8.0

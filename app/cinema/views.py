@@ -13,8 +13,11 @@ from .models import ResponseChoice
 from docx import Document
 
 import os, locale
-from datetime import date, datetime, time
+from datetime import date, time
+import datetime
 from sudu.settings import BASE_DIR
+from babel.dates import format_date, format_datetime, format_time
+
 
 def image_upload(request):
     if request.method == "POST" and request.FILES["image_file"]:
@@ -42,7 +45,13 @@ def inscriptionByMonthAndFilm(request, month_id, year, film_id):
 
 
 def docxReport(request, month_id, year, lang,film_id):
-    locale.setlocale(locale.LC_TIME, "fr_FR.utf8")
+
+    langMap = dict(fr = {'template': 'TEMPLATE _ Suivi de diffusion.docx', 'locale': 'fr_FR', 'emptyList' : 'Pas Encore.'},
+        en = {'template': 'TEMPLATE _ Distribution Tracking.docx', 'locale': 'en_US', 'emptyList' : 'Not yet.'})
+
+    locale.setlocale(locale.LC_TIME, langMap.get(lang).get('locale'))
+    print("@"+langMap.get(lang).get('locale'))
+    print (locale.getlocale())
 
     file_path = os.path.join(BASE_DIR, 'temp/')
     currentFilm =  Film.objects.get(id=film_id)
@@ -57,30 +66,35 @@ def docxReport(request, month_id, year, lang,film_id):
     for item in subList:
         print(item.festival.name + " (" +  item.festival.country.name +")")
         subOutput += (item.festival.name + " (" +  item.festival.country.name +")\n") 
-
+    if not subOutput:
+        subOutput = langMap[lang]['emptyList']
 
     print("\Selection:")
     for item in selectList:
         print(item.festival.name + " (" +  item.festival.country.name +")")
         selectOutput += (item.festival.name + " (" +  item.festival.country.name +")\n") 
-
+    if not selectOutput:
+        selectOutput = langMap[lang]['emptyList']
 
     print("\Rejection:")
     for item in rejectList:
         print(item.festival.name + " (" +  item.festival.country.name +")")
         rejectOutput += (item.festival.name + " (" +  item.festival.country.name +")\n") 
+    if not rejectOutput:
+        rejectOutput = langMap[lang]['emptyList']
 
 
-    document = Document(file_path + 'TEMPLATE _ Suivi de diffusion.docx')
+
+    document = Document(file_path + langMap[lang]['template'])
 
     dic = {'INSCRIPTIONS_LIST':subOutput,
            'MOVIE_NAME':currentFilm.name, 
-           'CURRENT_DATE': datetime.today().strftime('%d %B %Y'),
-           'TARGET_MONTH': str(month_id),
+           'CURRENT_DATE': format_datetime(date.today(), format='dd MMMM YYYY', locale=langMap[lang]['locale']),
+           'TARGET_MONTH': format_datetime(datetime.datetime(1900, month_id,1), format='MMMM',locale=langMap[lang]['locale']),
            'TARGET_YEAR': str(year),
            'SELECTIONS_LIST': selectOutput,
            'REJECTIONS_LIST': rejectOutput,
-           'PROJECTIONS_LIST':''
+           'PROJECTIONS_LIST': langMap[lang]['emptyList']
            }
 
     for p in document.paragraphs:
@@ -92,6 +106,6 @@ def docxReport(request, month_id, year, lang,film_id):
                 p.text = p.text.replace(item,dic[item])
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    response['Content-Disposition'] = F'attachment; filename={currentFilm.name}-{month_id}-{year}.docx'
+    response['Content-Disposition'] = F'attachment; filename={currentFilm.name}-{month_id}-{year}-{lang}.docx'
     document.save(response)
     return response
