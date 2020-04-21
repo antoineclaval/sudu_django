@@ -62,6 +62,7 @@ Default admin creds : admin/unsecure
 
 - prepare DB  migration ```$ docker-compose exec web python manage.py makemigrations```
 - apply migration ```$ docker-compose exec web python manage.py migrate --noinput```
+- django shell ```docker-compose exec web python manage.py shell```
 
 ## Interact with the PostGres Instance
 
