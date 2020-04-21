@@ -1,0 +1,63 @@
+<!-- MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" href="https://via.placeholder.com/70x70">
+    <link rel="stylesheet" href="https://andybrewer.github.io/mvp/mvp.css">
+
+    <meta charset="utf-8">
+    <meta name="description" content="Reports Management">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sudu Reports</title>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        // document.querySelector('option[value="11"]').selected = true
+        // window.location.href 
+      });
+    </script>
+</head>
+
+<body>
+    <h3 style="text-align: center;">Report {{ current_month_name }} {{ current_year }}</h3>
+    <main>
+
+      <form action="zip">
+        <div>
+            <table style="margin-left:auto;margin-right:auto;">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Title</th>
+                        <th>Total sent</th>
+                        <th>Sent {{ current_month_name }}</th>
+                        <th>FR</th>
+                        <th>EN</th>
+                    </tr>
+                </thead>
+                {% for movie in movies_list %}
+                  <tr>
+                    <td><input type="checkbox" value="{{ movie.id }}" name="movie"></td>
+                    <td> <a href="{{ movie.id }}">{{ movie.name }} </a>  </td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td><a href="{{ movie.id }}/docx/fr">FR </a></td>
+                    <td><a href="{{ movie.id }}/docx/en">EN</a> </td>
+                  </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div style="margin-right: auto;margin-left: auto;width: 50%;text-align: center;">      
+              <button type="submit">Zip it!</button>
+        </div>
+      </form>
+        <hr>
+    </main>
+    <footer>
+    </footer>
+</body>
+
+</html>
