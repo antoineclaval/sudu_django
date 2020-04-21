@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 
 
@@ -73,12 +73,12 @@ def generateZipReport(request, year, month_id):
 
 def index(request):
     year, month_id = map(int, time.strftime("%Y %m").split())
-    byMonth(request,year, month_id)
+    return HttpResponseRedirect(F'/cinema/reports/{year}/{month_id}/')
 
 def byMonth(request, year, month_id):
     template = loader.get_template('index.html')
     context = {
-        'movies_list': Film.objects.all(),
+        'movies_list': Film.objects.all(), #Submission.objects.filter(film_id = 3).count()
         'current_month_name': calendar.month_name[month_id],
         'current_year': time.strftime("%Y"),
 
