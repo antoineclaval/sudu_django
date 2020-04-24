@@ -7,6 +7,26 @@ from django.utils.dates import MONTHS
 import datetime
 
 from django.utils.translation import gettext_lazy as _
+from solo.models import SingletonModel
+
+
+class SiteConfiguration(SingletonModel):
+    maintenance_mode = models.BooleanField(default=False)
+
+    def lang_path_fr(self, filename):
+        return 'reportTemplate/template-fr.docx'
+
+    def lang_path_en(self, filename):
+        return 'reportTemplate/template-en.docx'
+
+    def __unicode__(self):
+        return u"Reports Configuration"
+
+    class Meta:
+        verbose_name = "Reports Configuration"
+    
+    frenchTemplate = models.FileField(null=True, blank=True, upload_to=lang_path_fr)
+    englishTemplate = models.FileField(null=True, blank=True, upload_to=lang_path_en)
 
 
 class G8Countries(Countries):

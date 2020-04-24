@@ -8,6 +8,11 @@ from .models import Festival
 from .models import Film
 from .models import Submission
 from .models import Projection
+from .models import SiteConfiguration
+
+from solo.admin import SingletonModelAdmin
+
+admin.site.register(SiteConfiguration, SingletonModelAdmin)
 
 class FestivalAdmin(ImportExportModelAdmin):
     search_fields = ['name', 'country']
@@ -41,9 +46,6 @@ class SubmissionAdmin(ImportExportModelAdmin):
 
 class ProjectionAdmin(admin.ModelAdmin):
     search_fields = ['location']
-
-
-
 
 
 admin.site.register(Festival, FestivalAdmin)

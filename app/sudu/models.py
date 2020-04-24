@@ -3,6 +3,7 @@ from django_countries import Countries
 
 
 from django.utils.translation import gettext_lazy as _
+from solo.models import SingletonModel
 
 
 class G8Countries(Countries):

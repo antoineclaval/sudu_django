@@ -18,7 +18,7 @@ import os, locale
 from datetime import date
 import time
 import datetime
-from sudu.settings import BASE_DIR
+from sudu.settings import MEDIA_ROOT
 from babel.dates import format_date, format_datetime, format_time
 
 from io import StringIO
@@ -103,12 +103,12 @@ def docxReport(request, month_id, year, lang,film_id):
 
 
 def generateDocXReport(month_id, year, lang, film_id):
-    langMap = dict(fr = {'template': 'TEMPLATE _ Suivi de diffusion.docx', 'locale': 'fr_FR', 'emptyList' : 'Pas Encore.'},
-        en = {'template': 'TEMPLATE _ Distribution Tracking.docx', 'locale': 'en_US', 'emptyList' : 'Not yet.'})
+    langMap = dict(fr = {'template': 'template-fr.docx', 'locale': 'fr_FR', 'emptyList' : 'Pas Encore.'},
+        en = {'template': 'template-en.docx', 'locale': 'en_US', 'emptyList' : 'Not yet.'})
 
     locale.setlocale(locale.LC_TIME, langMap.get(lang).get('locale'))
 
-    file_path = os.path.join(BASE_DIR, 'temp/')
+    file_path = os.path.join(MEDIA_ROOT, 'reportTemplate/')
     currentFilm =  Film.objects.get(id=film_id)
     subList = Submission.objects.filter(dateSubmission__year=year).filter(dateSubmission__month=month_id).filter(film_id = film_id)
 

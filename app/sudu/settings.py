@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'imagekit',
     'import_export',
     'django_extensions',
+    'solo',
 ]
 
 MIDDLEWARE = [
