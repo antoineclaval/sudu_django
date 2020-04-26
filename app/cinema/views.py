@@ -87,12 +87,23 @@ def byMonth(request, year, month_id):
     return HttpResponse(template.render(context, request))
 
 def inscriptionByMonthAndFilm(request, month_id, year, film_id):
+    template = loader.get_template('report/film.html')
     currentFilm =  Film.objects.get(id=film_id)
-    subList = Submission.objects.filter(dateSubmission__year=year).filter(dateSubmission__month=month_id).filter(film_id = film_id)
-    output = ', '.join([q.festival.name for q in subList])
-    print(output)
-    s = F'{month_id} - {currentFilm.name} \n {output}'
-    return HttpResponse(s)
+    subList = Submission.objects.filter(dateSubmission__year=year).filter(dateSubmission__month=month_id).filter(film_id = film_id)  
+    selectList = Submission.objects.filter(dateSubmission__year=year).filter(film_id = film_id).filter(response__iexact = 'SELECTIONED')
+    rejectList = Submission.objects.filter(dateSubmission__year=year).filter(film_id = film_id).filter(response__iexact = 'REFUSED') 
+
+    context = {
+        'submissions_list': subList, 
+        'select_list' : selectList,
+        'reject_list' : rejectList,
+        'current_month_name': calendar.month_name[month_id],
+        'current_year': time.strftime("%Y"),
+        'current_film' : currentFilm
+    }
+
+
+    return HttpResponse(template.render(context, request))
 
 
 def docxReport(request, month_id, year, lang,film_id):
