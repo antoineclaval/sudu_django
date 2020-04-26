@@ -55,6 +55,7 @@ def generateZipReport(request, year, month_id):
         docxDoc.save(inMemoryDoc)
         zip.writestr(docxDoc.core_properties.title+".docx", inMemoryDoc.getvalue())
 
+        inMemoryDoc = BytesIO()
         docxDoc = generateDocXReport(month_id,year, "en", movieID)
         docxDoc.save(inMemoryDoc)
         zip.writestr(docxDoc.core_properties.title+".docx", inMemoryDoc.getvalue())
