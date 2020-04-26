@@ -1,3 +1,4 @@
+import os 
 from django.db import models
 from django_countries.fields import CountryField
 from django_countries import Countries
@@ -9,6 +10,14 @@ import datetime
 from django.utils.translation import gettext_lazy as _
 from solo.models import SingletonModel
 
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+
+class OverwriteStorage(FileSystemStorage):
+    def get_available_name(self, name, max_length=None):
+        if self.exists(name):
+            os.remove(os.path.join(settings.MEDIA_ROOT, name))
+        return name
 
 class SiteConfiguration(SingletonModel):
     maintenance_mode = models.BooleanField(default=False)
@@ -25,8 +34,8 @@ class SiteConfiguration(SingletonModel):
     class Meta:
         verbose_name = "Reports Configuration"
     
-    frenchTemplate = models.FileField(null=True, blank=True, upload_to=lang_path_fr)
-    englishTemplate = models.FileField(null=True, blank=True, upload_to=lang_path_en)
+    frenchTemplate = models.FileField(null=True, blank=True, upload_to=lang_path_fr, storage=OverwriteStorage())
+    englishTemplate = models.FileField(null=True, blank=True, upload_to=lang_path_en, storage=OverwriteStorage())
 
 
 class G8Countries(Countries):
