@@ -27,6 +27,8 @@ from zipfile import ZipFile
 
 import calendar
 
+from django.contrib.auth.decorators import login_required
+
 
 def image_upload(request):
     if request.method == "POST" and request.FILES["image_file"]:
@@ -72,10 +74,12 @@ def generateZipReport(request, year, month_id):
     return response
 
 
+@login_required(login_url='/admin/login')
 def index(request):
     year, month_id = map(int, time.strftime("%Y %m").split())
     return HttpResponseRedirect(F'/cinema/reports/{year}/{month_id}/')
 
+@login_required(login_url='/admin/login')
 def byMonth(request, year, month_id):
     template = loader.get_template('index.html')
     context = {
@@ -110,7 +114,7 @@ def docxReport(request, month_id, year, lang,film_id):
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     document = generateDocXReport(month_id, year, lang, film_id)
     document.save(response)
-    response['Content-Disposition'] = F'attachment; filename={document.core_properties.title}-{month_id}-{year}-{lang}.docx'
+    response['Content-Disposition'] = F'attachment; filename={document.core_properties.title}-{month_id}-{year}.docx'
     return response
 
 
@@ -129,23 +133,17 @@ def generateDocXReport(month_id, year, lang, film_id):
 
     subOutput, selectOutput, rejectOutput = "","",""
 
-    print("\nInscriptions:")
     for item in subList:
-        print(item.festival.name + " (" +  item.festival.country.name +")")
         subOutput += (item.festival.name + " (" +  item.festival.country.name +")\n") 
     if not subOutput:
         subOutput = langMap[lang]['emptyList']
 
-    print("\Selection:")
     for item in selectList:
-        print(item.festival.name + " (" +  item.festival.country.name +")")
         selectOutput += (item.festival.name + " (" +  item.festival.country.name +")\n") 
     if not selectOutput:
         selectOutput = langMap[lang]['emptyList']
 
-    print("\Rejection:")
     for item in rejectList:
-        print(item.festival.name + " (" +  item.festival.country.name +")")
         rejectOutput += (item.festival.name + " (" +  item.festival.country.name +")\n") 
     if not rejectOutput:
         rejectOutput = langMap[lang]['emptyList']
@@ -153,7 +151,7 @@ def generateDocXReport(month_id, year, lang, film_id):
     document = Document(file_path + langMap[lang]['template'])
 
     dic = {'INSCRIPTIONS_LIST':subOutput,
-        'MOVIE_NAME' : currentFilm.name, 
+        'MOVIE_NAME' : currentFilm.name.upper() , 
         'CURRENT_DATE': format_datetime(date.today(), format='dd MMMM YYYY', locale=langMap[lang]['locale']),
         'TARGET_MONTH': format_datetime(datetime.datetime(1900, int(month_id) ,1), format='MMMM',locale=langMap[lang]['locale']),
         'TARGET_YEAR': str(year),
