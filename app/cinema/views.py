@@ -128,8 +128,8 @@ def generateDocXReport(month_id, year, lang, film_id):
     currentFilm =  Film.objects.get(id=film_id)
     subList = Submission.objects.filter(dateSubmission__year=year).filter(dateSubmission__month=month_id).filter(film_id = film_id)
 
-    selectList = Submission.objects.filter(dateSubmission__year=year).filter(film_id = film_id).filter(response__iexact = 'SELECTIONED')
-    rejectList = Submission.objects.filter(dateSubmission__year=year).filter(film_id = film_id).filter(response__iexact = 'REFUSED')
+    selectList = Submission.objects.filter(responseDate__year=year).filter(responseDate__month=month_id).filter(film_id = film_id).filter(response__iexact = 'SELECTIONED')
+    rejectList = Submission.objects.filter(responseDate__year=year).filter(responseDate__month=month_id).filter(film_id = film_id).filter(response__iexact = 'REFUSED') 
 
     subOutput, selectOutput, rejectOutput = "","",""
 
