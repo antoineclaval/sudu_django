@@ -1,0 +1,46 @@
+<!-- MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" href="https://via.placeholder.com/70x70">
+    <link rel="stylesheet" href="https://andybrewer.github.io/mvp/mvp.css">
+
+    <meta charset="utf-8">
+    <meta name="description" content="Reports Management">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sudu Reports</title>
+
+</head>
+
+<body>
+    <h3 style="text-align: center;">{{current_film.name}}  : {{ current_month_name }} {{ current_year }}</h3>
+    <main>
+        <h4>Inscriptions</h4>
+        <ul>
+            {% for submission in submissions_list %}
+                <li>{{submission.festival.name}} ( {{ submission.festival.country.name }} )</li>
+            {% endfor %}
+        </ul>
+
+        <h4>Selection</h4>
+        <ul>
+            {% for submission in select_list %}
+                 <li>{{submission.festival.name}} ( {{ submission.festival.country.name }} )</li>
+            {% endfor %}
+        </ul>
+
+        <h4>Rejection</h4>
+        <ul>
+            {% for submission in reject_list %}
+                <li>{{submission.festival.name}} ( {{ submission.festival.country.name }} )</li>
+            {% endfor %}
+        </ul>
+    </main>
+    <footer>
+    </footer>
+</body>
+
+</html>
