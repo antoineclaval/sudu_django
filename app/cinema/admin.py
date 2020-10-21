@@ -15,15 +15,17 @@ from solo.admin import SingletonModelAdmin
 admin.site.register(SiteConfiguration, SingletonModelAdmin)
 
 class FestivalAdmin(ImportExportModelAdmin):
-    search_fields = ['name', 'country']
-    list_display = ['name', 'country', 'is_african', 'country', 'has_rental_fee', 'price']
-
+    search_fields = ['name', 'country', 'month_occurence']
+    list_display = ['name', 'month_occurence','current_year_date','deadline_date', 'is_african', 'country', 'has_rental_fee', 'price']
+    list_filter = ('month_occurence','country')
 
 class FilmAdmin(ImportExportModelAdmin):
-    search_fields = ['name']
-    list_display = ['name', 'image_display']
+    search_fields = ['name', 'director']
+    list_display = ['name', 'country', 'director', 'productionYear','image_display']
     image_display = AdminThumbnail(image_field='poster')
     image_display.short_description = 'Image'
+    list_filter = ('productionYear','country')
+
 
     readonly_fields = ['image_display']  # this is for the change form
 
@@ -36,16 +38,18 @@ class FilmFilter(AutocompleteFilter):
     field_name = 'film' # name of the foreign key field
 
 class SubmissionAdmin(ImportExportModelAdmin):
-    search_fields = ['film__name', 'festival__name']
-    list_display = ['festival', 'film', 'dateSubmission']
+    search_fields = ['film__name', 'festival__name', 'response', 'responseDate', 'dateSubmission']
+    list_display = ['festival', 'film', 'dateSubmission', 'response', 'responseDate']
     #list_filter = [FestivalFilter, FilmFilter]
+    list_filter = ('dateSubmission','response', 'responseDate')
+
 
     autocomplete_fields = ['festival', 'film']
     class Media:
         pass
 
 class ProjectionAdmin(admin.ModelAdmin):
-    search_fields = ['location']
+    search_fields = ['location', 'film__name',]
 
 
 admin.site.register(Festival, FestivalAdmin)
