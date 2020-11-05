@@ -117,6 +117,10 @@ def docxReport(request, month_id, year, lang,film_id):
     response['Content-Disposition'] = F'attachment; filename={document.core_properties.title}-{month_id}-{year}.docx'
     return response
 
+def getCleanDate(dirtyDate):
+    if(dirtyDate.strip()):
+        return " - " + dirtyDate.strip() + " - "
+
 
 def generateDocXReport(month_id, year, lang, film_id):
     langMap = dict(fr={'template': 'template-fr.docx', 'locale': 'fr_FR', 'emptyList': 'Pas Encore.'},
@@ -139,7 +143,7 @@ def generateDocXReport(month_id, year, lang, film_id):
         subOutput = langMap[lang]['emptyList']
 
     for item in selectList:
-        selectOutput += (item.festival.name + " (" +  item.festival.country.name +")\n") 
+        selectOutput += (item.festival.name + getCleanDate( item.festival.current_year_date )  + "(" +  item.festival.country.name +")\n") 
     if not selectOutput:
         selectOutput = langMap[lang]['emptyList']
 

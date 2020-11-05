@@ -17,14 +17,18 @@ admin.site.register(SiteConfiguration, SingletonModelAdmin)
 class FestivalAdmin(ImportExportModelAdmin):
     search_fields = ['name', 'country', 'month_occurence']
     list_display = ['name', 'month_occurence','current_year_date','deadline_date', 'is_african', 'country', 'has_rental_fee', 'price']
-    list_filter = ('month_occurence','country')
+    list_filter = ('month_occurence',
+    ('is_african', admin.BooleanFieldListFilter),
+    'country')
 
 class FilmAdmin(ImportExportModelAdmin):
     search_fields = ['name', 'director']
     list_display = ['name', 'country', 'director', 'productionYear','image_display']
     image_display = AdminThumbnail(image_field='poster')
     image_display.short_description = 'Image'
-    list_filter = ('productionYear','country')
+    list_filter = ('productionYear',
+                  ('country')
+                  )
 
 
     readonly_fields = ['image_display']  # this is for the change form
