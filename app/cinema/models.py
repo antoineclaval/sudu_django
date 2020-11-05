@@ -116,7 +116,7 @@ MY_CHOICES = [('SELECTIONED', 'Selectionned'), ('REFUSED', 'Refused'), ('NO_RESP
 
 
 class Submission(models.Model):
-    dateSubmission = models.DateField('Submission Date', blank=False, null=datetime.datetime.now())
+    dateSubmission = models.DateField('Submission Date', blank=False, null=datetime.datetime.now)
     film = models.ForeignKey(Film, on_delete=models.CASCADE)
     # https://www.revsys.com/tidbits/tips-using-djangos-manytomanyfield/
     # pizza = models.ForeignKey('Pizza', related_name='topping_amounts', on_delete=models.SET_NULL, null=True)
