@@ -43,11 +43,9 @@ class FilmFilter(AutocompleteFilter):
 
 class SubmissionAdmin(ImportExportModelAdmin):
     search_fields = ['film__name', 'festival__name', 'response', 'responseDate', 'dateSubmission']
-    list_display = ['festival', 'film', 'dateSubmission', 'response', 'responseDate']
+    list_display = ['festival', 'film', 'dateSubmission', 'response', 'responseDate', 'isCompetitive']
     #list_filter = [FestivalFilter, FilmFilter]
-    list_filter = ('dateSubmission','response', 'responseDate')
-
-
+    list_filter = ('dateSubmission','response', 'responseDate', 'isCompetitive')
     autocomplete_fields = ['festival', 'film']
     class Media:
         pass

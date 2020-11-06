@@ -118,6 +118,7 @@ MY_CHOICES = [('SELECTIONED', 'Selectionned'), ('REFUSED', 'Refused'), ('NO_RESP
 class Submission(models.Model):
     dateSubmission = models.DateField('Submission Date', blank=False, null=datetime.datetime.now)
     film = models.ForeignKey(Film, on_delete=models.CASCADE)
+    
     # https://www.revsys.com/tidbits/tips-using-djangos-manytomanyfield/
     # pizza = models.ForeignKey('Pizza', related_name='topping_amounts', on_delete=models.SET_NULL, null=True)
     # topping = models.ForeignKey('Topping', related_name='topping_amounts', on_delete=models.SET_NULL, null=True, blank=True)
@@ -125,6 +126,8 @@ class Submission(models.Model):
     festival = models.ForeignKey(Festival, on_delete=models.CASCADE) 
     response = models.CharField( default='NO_RESPONSE' , max_length=30, choices=MY_CHOICES)  
     responseDate = models.DateField('Response Date', blank=True, null=True)
+    isCompetitive = models.BooleanField(default=False) # integrety check with festival.isCompetitive
+
 
     def __str__(self):
         return '{} / {}'.format(self.film.name, self.festival.name) 
