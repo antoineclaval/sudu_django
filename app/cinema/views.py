@@ -11,7 +11,7 @@ from .models import Film
 from .models import Submission
 from .models import Festival
 
-from docx import Document
+from docxtpl import DocxTemplate
 
 import os, locale
 from datetime import date
@@ -24,7 +24,10 @@ from io import StringIO
 from io import BytesIO
 from zipfile import ZipFile
 
+import json
 import calendar
+from django.forms import model_to_dict
+
 
 from django.contrib.auth.decorators import login_required
 
@@ -120,7 +123,6 @@ def getCleanDate(dirtyDate):
     if(dirtyDate.strip()):
         return " - " + dirtyDate.strip() + " - "
 
-
 def generateDocXReport(month_id, year, lang, film_id):
     langMap = dict(fr={'template': 'template-fr.docx', 'locale': 'fr_FR', 'emptyList': 'Pas Encore.'},
                    en={'template': 'template-en.docx', 'locale': 'en_US', 'emptyList': 'Not yet.'})
@@ -134,24 +136,24 @@ def generateDocXReport(month_id, year, lang, film_id):
     selectList = Submission.objects.filter(responseDate__year=year).filter(responseDate__month=month_id).filter(film_id=film_id).filter(response__iexact='SELECTIONED')
     rejectList = Submission.objects.filter(responseDate__year=year).filter(responseDate__month=month_id).filter(film_id=film_id).filter(response__iexact='REFUSED') 
 
-    subOutput, selectOutput, rejectOutput = "","",""
+    subOutput, selectOutput, rejectOutput = [],[],[]
 
     for item in subList:
-        subOutput += (item.festival.name + " (" +  item.festival.country.name +")\n") 
+        subOutput.append({'festival' : model_to_dict(item.festival)})
     if not subOutput:
-        subOutput = langMap[lang]['emptyList']
+        subOutput.append({'festival' : {'name': langMap[lang]['emptyList']}})
 
     for item in selectList:
-        selectOutput += (item.festival.name + getCleanDate( item.festival.current_year_date )  + "(" +  item.festival.country.name +")\n") 
-    if not selectOutput:
-        selectOutput = langMap[lang]['emptyList']
+        selectOutput.append({'festival' : model_to_dict(item.festival)})
+    if not subOutput:
+        selectOutput.append({'festival' : {'name': langMap[lang]['emptyList']}})
 
     for item in rejectList:
-        rejectOutput += (item.festival.name + " (" +  item.festival.country.name +")\n") 
-    if not rejectOutput:
-        rejectOutput = langMap[lang]['emptyList']
-
-    document = Document(file_path + langMap[lang]['template'])
+        rejectOutput.append({'festival' : model_to_dict(item.festival)})
+    if not subOutput:
+        rejectOutput.append({'festival' : {'name': langMap[lang]['emptyList']}})
+        
+    document = DocxTemplate(file_path + langMap[lang]['template'])
 
     dic = {'INSCRIPTIONS_LIST': subOutput,
            'MOVIE_NAME': currentFilm.name.upper(),
@@ -162,13 +164,7 @@ def generateDocXReport(month_id, year, lang, film_id):
            'REJECTIONS_LIST': rejectOutput,
            'PROJECTIONS_LIST': langMap[lang]['emptyList']
            }
+    document.render(dic)
 
-    for p in document.paragraphs:
-        pItems = p.text.split(" ")
-        for item in pItems:
-            item = item.strip()
-            print(item)
-            if item in dic.keys():
-                p.text = p.text.replace(item,dic[item])
     document.core_properties.title = currentFilm.name+"-"+lang
     return document
