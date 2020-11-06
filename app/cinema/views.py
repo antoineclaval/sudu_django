@@ -10,7 +10,6 @@ from django.template import loader
 from .models import Film
 from .models import Submission
 from .models import Festival
-from .models import ResponseChoice
 
 from docx import Document
 

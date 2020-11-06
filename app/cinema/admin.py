@@ -16,17 +16,17 @@ admin.site.register(SiteConfiguration, SingletonModelAdmin)
 
 class FestivalAdmin(ImportExportModelAdmin):
     search_fields = ['name', 'country', 'month_occurence']
-    list_display = ['name', 'month_occurence','current_year_date','deadline_date', 'is_african', 'country', 'has_rental_fee', 'price']
+    list_display = ['name', 'month_occurence','current_year_date','deadline_date', 'is_african', 'country', 'isCompetitive', 'has_rental_fee', 'price']
     list_filter = ('month_occurence',
     ('is_african', admin.BooleanFieldListFilter),
     'country')
 
 class FilmAdmin(ImportExportModelAdmin):
     search_fields = ['name', 'director']
-    list_display = ['name', 'country', 'director', 'productionYear','image_display']
+    list_display = ['name', 'country', 'director', 'productionYear','image_display', 'filmType']
     image_display = AdminThumbnail(image_field='poster')
     image_display.short_description = 'Image'
-    list_filter = ('productionYear',
+    list_filter = ('productionYear', 
                   ('country')
                   )
 
@@ -42,13 +42,30 @@ class FilmFilter(AutocompleteFilter):
     field_name = 'film' # name of the foreign key field
 
 class SubmissionAdmin(ImportExportModelAdmin):
+    model = Submission
     search_fields = ['film__name', 'festival__name', 'response', 'responseDate', 'dateSubmission']
-    list_display = ['festival', 'film', 'dateSubmission', 'response', 'responseDate', 'isCompetitive']
+    list_display = ['festival', 'film', 'dateSubmission', 'response', 'responseDate', 'get_isCompetitive', 'get_country', 'get_month_occurence']
     #list_filter = [FestivalFilter, FilmFilter]
-    list_filter = ('dateSubmission','response', 'responseDate', 'isCompetitive')
+    list_filter = ('dateSubmission','response', 'responseDate')
     autocomplete_fields = ['festival', 'film']
     class Media:
         pass
+
+
+    def get_isCompetitive(self, obj):
+        return obj.festival.isCompetitive
+    get_isCompetitive.admin_order_field  = 'festival__isCompetitive'  
+    get_isCompetitive.short_description = 'Competitive' 
+
+    def get_country(self, obj):
+        return obj.festival.country
+    get_country.admin_order_field  = 'festival__country'  
+    get_country.short_description = 'Country' 
+
+    def get_month_occurence(self, obj):
+        return obj.festival.month_occurence
+    get_month_occurence.admin_order_field  = 'festival__month_occurence'  
+    get_month_occurence.short_description = 'Month Festival' 
 
 class ProjectionAdmin(admin.ModelAdmin):
     search_fields = ['location', 'film__name',]

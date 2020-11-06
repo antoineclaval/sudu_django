@@ -52,7 +52,7 @@ class G8Countries(Countries):
 OCCURENCE_CHOICES = { 111: _('Year Round')}
 OCCURENCE_CHOICES.update(MONTHS)
 
-
+PRESENCE_CHOICES = [('ONLINE', 'On-line'), ('PHYSICAL', 'Physique'), ('BOTH','Online+Physique')]
 class Festival(models.Model):
     name = models.CharField(max_length=200)
     # https://dustindavis.me/django-month_choices/
@@ -64,30 +64,24 @@ class Festival(models.Model):
     price = models.CharField(max_length=100, blank=True, null=True)
     # fee = models.DecimalField()
     has_rental_fee = models.BooleanField(default=False)
-    is_competitive = models.BooleanField(default=False)
+    isCompetitive = models.BooleanField(default=False)
     comments = models.CharField(max_length=500, blank=True, null=True)
     support = models.CharField(max_length=600, blank=True, null=True)
     link = models.CharField(max_length=200, blank=True, null=True)
+    presenceType = models.CharField(default='PHYSICAL' , max_length=20, choices=PRESENCE_CHOICES)  
     # models.ManyToManyField('Topping', through='ToppingAmount', related_name='pizzas'
     inscriptions = models.ManyToManyField('Film', through="Submission", related_name='festivals') 
-    # Location YES?NO
 
     def __str__(self):
         return self.name
 
 
-class FilmTypeChoice(Enum):  
-    DOC = "Documentaire"
-    FICTION = "Fiction"
-    COURT = "Court-Métrage"
-
-
-YEAR_CHOICES = []
-for r in range(2000, (datetime.datetime.now().year+1)):
-    YEAR_CHOICES.append((r,r))
-
-
+FILM_TYPE_CHOICES = [('DOCU', 'Documentaire'), ('FICTION', 'Fiction'), ('SHORT','Court-Métrage')]
 class Film(models.Model):
+    YEAR_CHOICES = []
+    for r in range(2010, (datetime.datetime.now().year+1)):
+        YEAR_CHOICES.append((r,r))
+
     name = models.CharField(max_length=200)
     poster = models.ImageField(null=True, blank=True, upload_to="poster")
     country = CountryField(blank=False, null=False, default="FR")
@@ -97,7 +91,7 @@ class Film(models.Model):
         
     def __str__(self):
         return self.name
-    #filmType = models.CharField( default=FilmTypeChoice.FICTION , max_length=20, choices=[(tag, tag.value) for tag in FilmTypeChoice])  # Choices is a list of Tuple
+    filmType = models.CharField(default='FICTION' , max_length=20, choices=FILM_TYPE_CHOICES)  
     # langue
     # Palmares
     # 	..
@@ -106,19 +100,10 @@ class Film(models.Model):
     # 	 Lieux
 
 
-class ResponseChoice(Enum):  
-    SELECTIONED = "Selectionned"
-    REFUSED = "Refused"
-    NO_RESPONSE = "No response yet"
-
-
 MY_CHOICES = [('SELECTIONED', 'Selectionned'), ('REFUSED', 'Refused'), ('NO_RESPONSE','No response yet')]
-
-
 class Submission(models.Model):
     dateSubmission = models.DateField('Submission Date', blank=False, null=datetime.datetime.now)
     film = models.ForeignKey(Film, on_delete=models.CASCADE)
-    
     # https://www.revsys.com/tidbits/tips-using-djangos-manytomanyfield/
     # pizza = models.ForeignKey('Pizza', related_name='topping_amounts', on_delete=models.SET_NULL, null=True)
     # topping = models.ForeignKey('Topping', related_name='topping_amounts', on_delete=models.SET_NULL, null=True, blank=True)
@@ -126,9 +111,7 @@ class Submission(models.Model):
     festival = models.ForeignKey(Festival, on_delete=models.CASCADE) 
     response = models.CharField( default='NO_RESPONSE' , max_length=30, choices=MY_CHOICES)  
     responseDate = models.DateField('Response Date', blank=True, null=True)
-    isCompetitive = models.BooleanField(default=False) # integrety check with festival.isCompetitive
-
-
+    #isCompetitive = models.BooleanField(default=False) # integrity check with festival.isCompetitive
     def __str__(self):
         return '{} / {}'.format(self.film.name, self.festival.name) 
 
