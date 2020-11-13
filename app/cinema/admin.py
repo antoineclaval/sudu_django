@@ -15,11 +15,14 @@ from solo.admin import SingletonModelAdmin
 admin.site.register(SiteConfiguration, SingletonModelAdmin)
 
 class FestivalAdmin(ImportExportModelAdmin):
-    search_fields = ['name', 'country', 'month_occurence']
-    list_display = ['name', 'month_occurence','current_year_date','deadline_date', 'is_african', 'country', 'isCompetitive', 'has_rental_fee', 'price']
+    search_fields = ['name', 'country', 'month_occurence', 'inscriptions__name']
+    list_display = ['name', 'month_occurence','current_year_date','deadline_date', 'is_african', 'country', 'isCompetitive', 'has_rental_fee', 'price', 'presenceType']
     list_filter = ('month_occurence',
     ('is_african', admin.BooleanFieldListFilter),
-    'country')
+    'country',
+    'presenceType',
+    'month_occurence',
+    'inscriptions__name')
 
 class FilmAdmin(ImportExportModelAdmin):
     search_fields = ['name', 'director']

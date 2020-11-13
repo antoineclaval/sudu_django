@@ -65,11 +65,12 @@ class Festival(models.Model):
     # fee = models.DecimalField()
     has_rental_fee = models.BooleanField(default=False)
     isCompetitive = models.BooleanField(default=False)
+    isRescheduled = models.BooleanField('is rescheduled', default=False)
+    rescheduledDate = models.DateField('Rescheduled Date', blank=True, null=True)
     comments = models.CharField(max_length=500, blank=True, null=True)
     support = models.CharField(max_length=600, blank=True, null=True)
     link = models.CharField(max_length=200, blank=True, null=True)
-    presenceType = models.CharField(default='PHYSICAL' , max_length=20, choices=PRESENCE_CHOICES)  
-    # models.ManyToManyField('Topping', through='ToppingAmount', related_name='pizzas'
+    presenceType = models.CharField('In person/remote', default='PHYSICAL' , max_length=20, choices=PRESENCE_CHOICES)  
     inscriptions = models.ManyToManyField('Film', through="Submission", related_name='festivals') 
 
     def __str__(self):
@@ -82,11 +83,11 @@ class Film(models.Model):
     for r in range(2010, (datetime.datetime.now().year+1)):
         YEAR_CHOICES.append((r,r))
 
-    name = models.CharField(max_length=200)
+    name = models.CharField('Film title',max_length=200)
     poster = models.ImageField(null=True, blank=True, upload_to="poster")
     country = CountryField(blank=False, null=False, default="FR")
     director = models.CharField(max_length=80, null=False, blank=False, default="Unknow")
-    productionYear = models.IntegerField(choices=YEAR_CHOICES, default=datetime.datetime.now().year)
+    productionYear = models.IntegerField('Production Year',choices=YEAR_CHOICES, default=datetime.datetime.now().year)
     description = models.TextField(null=True, blank=True)
         
     def __str__(self):
@@ -102,7 +103,7 @@ class Film(models.Model):
 
 MY_CHOICES = [('SELECTIONED', 'Selectionned'), ('REFUSED', 'Refused'), ('NO_RESPONSE','No response yet')]
 class Submission(models.Model):
-    dateSubmission = models.DateField('Submission Date', blank=False, null=datetime.datetime.now)
+    dateSubmission = models.DateField('Inscription Date', blank=False, null=datetime.datetime.now)
     film = models.ForeignKey(Film, on_delete=models.CASCADE)
     # https://www.revsys.com/tidbits/tips-using-djangos-manytomanyfield/
     # pizza = models.ForeignKey('Pizza', related_name='topping_amounts', on_delete=models.SET_NULL, null=True)
@@ -117,9 +118,14 @@ class Submission(models.Model):
 
 
 class Projection(models.Model): 
-    date = models.DateField('Periode', blank=True, null=True)
+    date = models.DateField('Projection Date', blank=True, null=True)
     location = models.CharField(max_length=200)
     film = models.ForeignKey(Film, on_delete=models.CASCADE) 
+    country = CountryField(blank=False, null=False, default="FR")
+    dateStartPeriod = models.DateField('Start period', blank=True, null=True)
+    dateEndPeriod = models.DateField('End period', blank=True, null=True)
+    presenceType = models.CharField('In person/remote', default='PHYSICAL' , max_length=20, choices=PRESENCE_CHOICES)  
+
     
     def __str__(self):
         return self.location
