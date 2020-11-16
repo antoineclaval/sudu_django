@@ -70,11 +70,11 @@ class SubmissionAdmin(ImportExportModelAdmin):
     get_month_occurence.admin_order_field  = 'festival__month_occurence'  
     get_month_occurence.short_description = 'Month Festival' 
 
-class ProjectionAdmin(admin.ModelAdmin):
+class ProjectionAdmin(ImportExportModelAdmin):
     search_fields = ['location', 'film__name']
     list_display = [ 'get_films', 'get_month','location', 'country', 'festival', 'event', 'date', 'dateStartPeriod', 'dateEndPeriod', 'supportChoices', 'quotedPrice', 'quoteSent', 'billSent', 'mediaSent', 'paymentReceived', 'socialMediaNotified', 'isCancel', 'isRescheduled', 'rescheduledDate']
 
-class EventAdmin(admin.ModelAdmin):
+class EventAdmin(ImportExportModelAdmin):
     search_fields = ['structure', 'name']
     list_display = [ 'structure', 'name', 'deadlineMediaReception']
 
