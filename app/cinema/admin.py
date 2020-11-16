@@ -8,6 +8,7 @@ from .models import Festival
 from .models import Film
 from .models import Submission
 from .models import Projection
+from .models import Event
 from .models import SiteConfiguration
 
 from solo.admin import SingletonModelAdmin
@@ -16,7 +17,7 @@ admin.site.register(SiteConfiguration, SingletonModelAdmin)
 
 class FestivalAdmin(ImportExportModelAdmin):
     search_fields = ['name', 'country', 'month_occurence', 'inscriptions__name']
-    list_display = ['name', 'month_occurence','current_year_date','deadline_date', 'is_african', 'country', 'isCompetitive', 'has_rental_fee', 'price', 'presenceType']
+    list_display = ['name', 'month_occurence','current_year_date','deadline_date', 'is_african', 'country', 'isCompetitive', 'has_rental_fee', 'price', 'presenceType', 'isRescheduled', 'rescheduledDate']
     list_filter = ('month_occurence',
     ('is_african', admin.BooleanFieldListFilter),
     'country',
@@ -29,7 +30,7 @@ class FilmAdmin(ImportExportModelAdmin):
     list_display = ['name', 'country', 'director', 'productionYear','image_display', 'filmType']
     image_display = AdminThumbnail(image_field='poster')
     image_display.short_description = 'Image'
-    list_filter = ('productionYear', 
+    list_filter = ('productionYear', 'filmType',
                   ('country')
                   )
 
@@ -54,7 +55,6 @@ class SubmissionAdmin(ImportExportModelAdmin):
     class Media:
         pass
 
-
     def get_isCompetitive(self, obj):
         return obj.festival.isCompetitive
     get_isCompetitive.admin_order_field  = 'festival__isCompetitive'  
@@ -71,10 +71,15 @@ class SubmissionAdmin(ImportExportModelAdmin):
     get_month_occurence.short_description = 'Month Festival' 
 
 class ProjectionAdmin(admin.ModelAdmin):
-    search_fields = ['location', 'film__name',]
+    search_fields = ['location', 'film__name']
+    list_display = [ 'get_films', 'get_month','location', 'country', 'festival', 'event', 'date', 'dateStartPeriod', 'dateEndPeriod', 'supportChoices', 'quotedPrice', 'quoteSent', 'billSent', 'mediaSent', 'paymentReceived', 'socialMediaNotified', 'isCancel', 'isRescheduled', 'rescheduledDate']
 
+class EventAdmin(admin.ModelAdmin):
+    search_fields = ['structure', 'name']
+    list_display = [ 'structure', 'name', 'deadlineMediaReception']
 
 admin.site.register(Festival, FestivalAdmin)
 admin.site.register(Film, FilmAdmin)
 admin.site.register(Submission, SubmissionAdmin)
 admin.site.register(Projection, ProjectionAdmin)
+admin.site.register(Event, EventAdmin)
