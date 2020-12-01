@@ -10,9 +10,8 @@ from django.template import loader
 from .models import Film
 from .models import Submission
 from .models import Festival
-from .models import ResponseChoice
 
-from docx import Document
+from docxtpl import DocxTemplate
 
 import os, locale
 from datetime import date
@@ -25,7 +24,10 @@ from io import StringIO
 from io import BytesIO
 from zipfile import ZipFile
 
+import json
 import calendar
+from django.forms import model_to_dict
+
 
 from django.contrib.auth.decorators import login_required
 
@@ -36,6 +38,7 @@ def image_upload(request):
         fs = FileSystemStorage()
         filename = fs.save(image_file.name, image_file)
         image_url = fs.url(filename)
+        
         print(image_url)
         return render(request, "upload.html", {
             "image_url": image_url
@@ -90,23 +93,22 @@ def byMonth(request, year, month_id):
     }
     return HttpResponse(template.render(context, request))
 
+
 def inscriptionByMonthAndFilm(request, month_id, year, film_id):
     template = loader.get_template('report/film.html')
-    currentFilm =  Film.objects.get(id=film_id)
+    currentFilm = Film.objects.get(id=film_id)
     subList = Submission.objects.filter(dateSubmission__year=year).filter(dateSubmission__month=month_id).filter(film_id = film_id)  
-    selectList = Submission.objects.filter(dateSubmission__year=year).filter(film_id = film_id).filter(response__iexact = 'SELECTIONED')
-    rejectList = Submission.objects.filter(dateSubmission__year=year).filter(film_id = film_id).filter(response__iexact = 'REFUSED') 
+    selectList = Submission.objects.filter(responseDate__year=year).filter(responseDate__month=month_id).filter(film_id = film_id).filter(response__iexact = 'SELECTIONED')
+    rejectList = Submission.objects.filter(responseDate__year=year).filter(responseDate__month=month_id).filter(film_id = film_id).filter(response__iexact = 'REFUSED') 
 
     context = {
         'submissions_list': subList, 
-        'select_list' : selectList,
-        'reject_list' : rejectList,
+        'select_list': selectList,
+        'reject_list': rejectList,
         'current_month_name': calendar.month_name[month_id],
         'current_year': time.strftime("%Y"),
-        'current_film' : currentFilm
+        'current_film': currentFilm
     }
-
-
     return HttpResponse(template.render(context, request))
 
 
@@ -117,55 +119,52 @@ def docxReport(request, month_id, year, lang,film_id):
     response['Content-Disposition'] = F'attachment; filename={document.core_properties.title}-{month_id}-{year}.docx'
     return response
 
+def getCleanDate(dirtyDate):
+    if(dirtyDate.strip()):
+        return " - " + dirtyDate.strip() + " - "
 
 def generateDocXReport(month_id, year, lang, film_id):
-    langMap = dict(fr = {'template': 'template-fr.docx', 'locale': 'fr_FR', 'emptyList' : 'Pas Encore.'},
-        en = {'template': 'template-en.docx', 'locale': 'en_US', 'emptyList' : 'Not yet.'})
+    langMap = dict(fr={'template': 'template-fr.docx', 'locale': 'fr_FR', 'emptyList': 'Pas Encore.'},
+                   en={'template': 'template-en.docx', 'locale': 'en_US', 'emptyList': 'Not yet.'})
 
     locale.setlocale(locale.LC_TIME, langMap.get(lang).get('locale'))
 
     file_path = os.path.join(MEDIA_ROOT, 'reportTemplate/')
     currentFilm =  Film.objects.get(id=film_id)
-    subList = Submission.objects.filter(dateSubmission__year=year).filter(dateSubmission__month=month_id).filter(film_id = film_id)
+    subList = Submission.objects.filter(dateSubmission__year=year).filter(dateSubmission__month=month_id).filter(film_id=film_id)
 
-    selectList = Submission.objects.filter(dateSubmission__year=year).filter(film_id = film_id).filter(response__iexact = 'SELECTIONED')
-    rejectList = Submission.objects.filter(dateSubmission__year=year).filter(film_id = film_id).filter(response__iexact = 'REFUSED')
+    selectList = Submission.objects.filter(responseDate__year=year).filter(responseDate__month=month_id).filter(film_id=film_id).filter(response__iexact='SELECTIONED')
+    rejectList = Submission.objects.filter(responseDate__year=year).filter(responseDate__month=month_id).filter(film_id=film_id).filter(response__iexact='REFUSED') 
 
-    subOutput, selectOutput, rejectOutput = "","",""
+    subOutput, selectOutput, rejectOutput = [],[],[]
 
     for item in subList:
-        subOutput += (item.festival.name + " (" +  item.festival.country.name +")\n") 
+        subOutput.append({'festival' : model_to_dict(item.festival)})
     if not subOutput:
-        subOutput = langMap[lang]['emptyList']
+        subOutput.append({'festival' : {'name': langMap[lang]['emptyList']}})
 
     for item in selectList:
-        selectOutput += (item.festival.name + " (" +  item.festival.country.name +")\n") 
-    if not selectOutput:
-        selectOutput = langMap[lang]['emptyList']
+        selectOutput.append({'festival' : model_to_dict(item.festival)})
+    if not subOutput:
+        selectOutput.append({'festival' : {'name': langMap[lang]['emptyList']}})
 
     for item in rejectList:
-        rejectOutput += (item.festival.name + " (" +  item.festival.country.name +")\n") 
-    if not rejectOutput:
-        rejectOutput = langMap[lang]['emptyList']
+        rejectOutput.append({'festival' : model_to_dict(item.festival)})
+    if not subOutput:
+        rejectOutput.append({'festival' : {'name': langMap[lang]['emptyList']}})
+        
+    document = DocxTemplate(file_path + langMap[lang]['template'])
 
-    document = Document(file_path + langMap[lang]['template'])
+    dic = {'INSCRIPTIONS_LIST': subOutput,
+           'MOVIE_NAME': currentFilm.name.upper(),
+           'CURRENT_DATE': format_datetime(date.today(), format='dd MMMM YYYY', locale=langMap[lang]['locale']),
+           'TARGET_MONTH': format_datetime(datetime.datetime(1900, int(month_id), 1), format='MMMM', locale=langMap[lang]['locale']),
+           'TARGET_YEAR': str(year),
+           'SELECTIONS_LIST': selectOutput,
+           'REJECTIONS_LIST': rejectOutput,
+           'PROJECTIONS_LIST': langMap[lang]['emptyList']
+           }
+    document.render(dic)
 
-    dic = {'INSCRIPTIONS_LIST':subOutput,
-        'MOVIE_NAME' : currentFilm.name.upper() , 
-        'CURRENT_DATE': format_datetime(date.today(), format='dd MMMM YYYY', locale=langMap[lang]['locale']),
-        'TARGET_MONTH': format_datetime(datetime.datetime(1900, int(month_id) ,1), format='MMMM',locale=langMap[lang]['locale']),
-        'TARGET_YEAR': str(year),
-        'SELECTIONS_LIST': selectOutput,
-        'REJECTIONS_LIST': rejectOutput,
-        'PROJECTIONS_LIST': langMap[lang]['emptyList']
-        }
-
-    for p in document.paragraphs:
-        pItems = p.text.split(" ")
-        for item in pItems:
-            item = item.strip()
-            print(item)
-            if item in dic.keys():
-                p.text = p.text.replace(item,dic[item])
     document.core_properties.title = currentFilm.name+"-"+lang
     return document
