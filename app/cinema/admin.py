@@ -48,17 +48,17 @@ class FilmFilter(AutocompleteFilter):
 class SubmissionAdmin(ImportExportModelAdmin):
     model = Submission
     search_fields = ['film__name', 'festival__name', 'response', 'responseDate', 'dateSubmission']
-    list_display = ['festival', 'film', 'dateSubmission', 'response', 'responseDate', 'get_isCompetitive', 'get_country', 'get_month_occurence']
+    list_display = ['festival', 'film', 'dateSubmission', 'response', 'responseDate', 'get_isCompetitiveFestival', 'isCompetitive',  'get_country', 'get_month_occurence']
     #list_filter = [FestivalFilter, FilmFilter]
     list_filter = ('dateSubmission','response', 'responseDate')
     autocomplete_fields = ['festival', 'film']
     class Media:
         pass
 
-    def get_isCompetitive(self, obj):
+    def get_isCompetitiveFestival(self, obj):
         return obj.festival.isCompetitive
-    get_isCompetitive.admin_order_field  = 'festival__isCompetitive'  
-    get_isCompetitive.short_description = 'Competitive' 
+    get_isCompetitiveFestival.admin_order_field  = 'festival__isCompetitive'  
+    get_isCompetitiveFestival.short_description = 'Competitive Festival' 
 
     def get_country(self, obj):
         return obj.festival.country

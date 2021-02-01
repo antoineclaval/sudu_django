@@ -109,6 +109,7 @@ class Submission(models.Model):
     dateSubmission = models.DateField('Inscription Date', blank=False, null=datetime.datetime.now)
     film = models.ForeignKey(Film, on_delete=models.CASCADE)
     festival = models.ForeignKey(Festival, on_delete=models.CASCADE) 
+    isCompetitive = models.BooleanField('is Part of festival competitive selection?',default=False, blank=False)
     response = models.CharField( default='NO_RESPONSE' , max_length=30, choices=MY_CHOICES)  
     responseDate = models.DateField('Response Date', blank=True, null=True)
     def __str__(self):
