@@ -163,7 +163,7 @@ class Projection(models.Model):
         else:
             if ( self.dateStartPeriod is None or self.dateEndPeriod is None):
                 raise ValidationError("Specify both start period and end period.") 
-        if self.dateStartPeriod > self.dateEndPeriod:
+        if self.dateStartPeriod is not None and self.dateEndPeriod is not None and self.dateStartPeriod > self.dateEndPeriod:
             raise ValidationError("Start date after end date in the date-range.")    
         if self.quoteSent and self.quotedPrice is None:
             raise ValidationError("If the quote is sent, specify a quoted price.")    
