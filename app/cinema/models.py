@@ -85,7 +85,7 @@ class Film(models.Model):
     class Meta:
         ordering = ['name']
 
-    FILM_TYPE_CHOICES = [('DOCU', 'Documentaire'), ('FICTION', 'Fiction'), ('SHORT','Court-Métrage'), ('XP','Experimental')]
+    FILM_TYPE_CHOICES = [('DOCU', 'Documentaire'), ('FICTION', 'Fiction'), ('SHORT','Court-Métrage'), ('XP','Experimental'), ('ANIMATION', 'Animation')]
     YEAR_CHOICES = []
     for r in range(2010, (datetime.datetime.now().year+1)):
         YEAR_CHOICES.append((r,r))
@@ -139,6 +139,8 @@ class Projection(models.Model):
     date = models.DateField('Projection Date', blank=True, null=True)
     dateStartPeriod = models.DateField('Start period', blank=True, null=True)
     dateEndPeriod = models.DateField('End period', blank=True, null=True)
+
+    isPartOfSelection = models.BooleanField('Selection', default=False)
 
     presenceType = models.CharField('In person/remote', default='PHYSICAL' , max_length=20, choices=PRESENCE_CHOICES)  
     supportChoices = models.CharField('Projection support', default='HDFTP' , max_length=20, choices=SUPPORT_CHOICES) 
