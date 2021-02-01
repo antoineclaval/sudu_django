@@ -25,17 +25,24 @@
             {% endfor %}
         </ul>
 
-        <h4>Selection</h4>
+        <h4>Selections</h4>
         <ul>
             {% for submission in select_list %}
                  <li>{{submission.festival.name}} ( {{ submission.festival.country.name }} )</li>
             {% endfor %}
         </ul>
 
-        <h4>Rejection</h4>
+        <h4>Rejections</h4>
         <ul>
             {% for submission in reject_list %}
                 <li>{{submission.festival.name}} ( {{ submission.festival.country.name }} )</li>
+            {% endfor %}
+        </ul>
+
+        <h4>Projections</h4>
+        <ul>
+            {% for projection in projection_list %}
+                <li>{{projection.festival.name}} {{projection.event.name}} ( {{ projection.country.name }}  )</li>
             {% endfor %}
         </ul>
     </main>

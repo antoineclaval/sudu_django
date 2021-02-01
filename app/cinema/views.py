@@ -10,6 +10,7 @@ from django.template import loader
 from .models import Film
 from .models import Submission
 from .models import Festival
+from .models import Projection
 
 from docxtpl import DocxTemplate
 
@@ -100,11 +101,13 @@ def inscriptionByMonthAndFilm(request, month_id, year, film_id):
     subList = Submission.objects.filter(dateSubmission__year=year).filter(dateSubmission__month=month_id).filter(film_id = film_id)  
     selectList = Submission.objects.filter(responseDate__year=year).filter(responseDate__month=month_id).filter(film_id = film_id).filter(response__iexact = 'SELECTIONED')
     rejectList = Submission.objects.filter(responseDate__year=year).filter(responseDate__month=month_id).filter(film_id = film_id).filter(response__iexact = 'REFUSED') 
+    projectionList = currentFilm.projections.filter(date__year=year).filter(date__month=month_id)
 
     context = {
         'submissions_list': subList, 
         'select_list': selectList,
         'reject_list': rejectList,
+        'projection_list' : projectionList,
         'current_month_name': calendar.month_name[month_id],
         'current_year': time.strftime("%Y"),
         'current_film': currentFilm
@@ -131,12 +134,15 @@ def generateDocXReport(month_id, year, lang, film_id):
 
     file_path = os.path.join(MEDIA_ROOT, 'reportTemplate/')
     currentFilm =  Film.objects.get(id=film_id)
-    subList = Submission.objects.filter(dateSubmission__year=year).filter(dateSubmission__month=month_id).filter(film_id=film_id)
 
+    subList = Submission.objects.filter(dateSubmission__year=year).filter(dateSubmission__month=month_id).filter(film_id=film_id)
     selectList = Submission.objects.filter(responseDate__year=year).filter(responseDate__month=month_id).filter(film_id=film_id).filter(response__iexact='SELECTIONED')
     rejectList = Submission.objects.filter(responseDate__year=year).filter(responseDate__month=month_id).filter(film_id=film_id).filter(response__iexact='REFUSED') 
+    projectionList = currentFilm.projections.filter(date__year=year).filter(date__month=month_id)
 
-    subOutput, selectOutput, rejectOutput = [],[],[]
+
+
+    subOutput, selectOutput, rejectOutput , projectionOutput = [],[],[], []
 
     for item in subList:
         subOutput.append({'festival' : model_to_dict(item.festival)})
@@ -152,6 +158,20 @@ def generateDocXReport(month_id, year, lang, film_id):
         rejectOutput.append({'festival' : model_to_dict(item.festival)})
     if not subOutput:
         rejectOutput.append({'festival' : {'name': langMap[lang]['emptyList']}})
+
+    for item in projectionList:
+        print(item)
+        if item.festival is None:
+            festivalOrEventName = item.event.name
+        else: 
+            festivalOrEventName = item.festival.name
+
+        if item.date is None:
+            dateString = item.dateStartPeriod.strftime("%m/%d/%Y") + " - " + item.dateEndPeriod.strftime("%m/%d/%Y") 
+        else: 
+            dateString = item.date.strftime("%m/%d/%Y")
+
+        projectionOutput.append({'name' : festivalOrEventName , 'date' : dateString, 'projection' : item})
         
     document = DocxTemplate(file_path + langMap[lang]['template'])
 
@@ -162,7 +182,7 @@ def generateDocXReport(month_id, year, lang, film_id):
            'TARGET_YEAR': str(year),
            'SELECTIONS_LIST': selectOutput,
            'REJECTIONS_LIST': rejectOutput,
-           'PROJECTIONS_LIST': langMap[lang]['emptyList']
+           'PROJECTIONS_LIST': projectionOutput
            }
     document.render(dic)
 

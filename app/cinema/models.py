@@ -81,44 +81,6 @@ class Festival(models.Model):
     def __str__(self):
         return self.name
 
-class Film(models.Model):
-    class Meta:
-        ordering = ['name']
-
-    FILM_TYPE_CHOICES = [('DOCU', 'Documentaire'), ('FICTION', 'Fiction'), ('SHORT','Court-Métrage'), ('XP','Experimental'), ('ANIMATION', 'Animation')]
-    YEAR_CHOICES = []
-    for r in range(2010, (datetime.datetime.now().year+1)):
-        YEAR_CHOICES.append((r,r))
-
-    name = models.CharField('Film title',max_length=200)
-    poster = models.ImageField(null=True, blank=True, upload_to="poster")
-    country = CountryField(blank=False, null=False, default="FR")
-    director = models.CharField(max_length=80, null=False, blank=False, default="Unknow")
-    productionYear = models.IntegerField('Production Year',choices=YEAR_CHOICES, default=datetime.datetime.now().year)
-    description = models.TextField(null=True, blank=True)
-        
-    def __str__(self):
-        return self.name
-    filmType = models.CharField(default='FICTION' , max_length=20, choices=FILM_TYPE_CHOICES)  
-    # langue
-    # Palmares
-
-
-MY_CHOICES = [('SELECTIONED', 'Selectionned'), ('REFUSED', 'Refused'), ('NO_RESPONSE','No response yet')]
-class Submission(models.Model):
-    dateSubmission = models.DateField('Inscription Date', blank=False, null=datetime.datetime.now)
-    film = models.ForeignKey(Film, on_delete=models.CASCADE)
-    festival = models.ForeignKey(Festival, on_delete=models.CASCADE) 
-    isCompetitive = models.BooleanField('is Part of festival competitive selection?',default=False, blank=False)
-    response = models.CharField( default='NO_RESPONSE' , max_length=30, choices=MY_CHOICES)  
-    responseDate = models.DateField('Response Date', blank=True, null=True)
-    def __str__(self):
-        return '{} / {}'.format(self.film.name, self.festival.name) 
-    def clean(self):
-        if self.responseDate is not None and self.response == 'NO_RESPONSE':
-            raise ValidationError("Specify what is the response. Selectioned or Refused? ")    
-
-
 class Event(models.Model): 
     structure = models.CharField('Structure', max_length=100)
     name = models.CharField('Event name', max_length=100)
@@ -126,12 +88,13 @@ class Event(models.Model):
     def __str__(self):
         return self.structure + ' - ' + self.name
 
+
 class Projection(models.Model): 
     SUPPORT_CHOICES = [('HDFTP', 'HD FTP'), ('DD', 'DD'), ('NAS','Nas'), ('DCP DD','DCP DD'), ( 'SMASH', 'Smash'), ('DVD', 'DVD'), ('.MOV', '.MOV'), ('BLURAY', 'Blu-ray')]
     location = models.CharField('City', max_length=200)
     country = CountryField(blank=False, null=False, default="FR")
 
-    films = models.ManyToManyField('Film') 
+    films = models.ManyToManyField('Film', blank=True) 
 
     festival = models.ForeignKey(Festival, on_delete=models.CASCADE, blank=True, null=True) 
     event = models.ForeignKey(Event, on_delete=models.CASCADE, blank=True, null=True) 
@@ -179,7 +142,47 @@ class Projection(models.Model):
         else:
             return self.dateStartPeriod.strftime('%B')
 
-
-
     def __str__(self):
         return self.location
+
+class Film(models.Model):
+    class Meta:
+        ordering = ['name']
+
+    FILM_TYPE_CHOICES = [('DOCU', 'Documentaire'), ('FICTION', 'Fiction'), ('SHORT','Court-Métrage'), ('XP','Experimental'), ('ANIMATION', 'Animation')]
+    YEAR_CHOICES = []
+    for r in range(2010, (datetime.datetime.now().year+1)):
+        YEAR_CHOICES.append((r,r))
+
+    name = models.CharField('Film title',max_length=200)
+    poster = models.ImageField(null=True, blank=True, upload_to="poster")
+    country = CountryField(blank=False, null=False, default="FR")
+    director = models.CharField(max_length=80, null=False, blank=False, default="Unknow")
+    productionYear = models.IntegerField('Production Year',choices=YEAR_CHOICES, default=datetime.datetime.now().year)
+    description = models.TextField(null=True, blank=True)
+        
+    projections = models.ManyToManyField('Projection', through=Projection.films.through, blank=True)
+
+    def __str__(self):
+        return self.name
+    filmType = models.CharField(default='FICTION' , max_length=20, choices=FILM_TYPE_CHOICES)  
+    # langue
+    # Palmares
+
+
+MY_CHOICES = [('SELECTIONED', 'Selectionned'), ('REFUSED', 'Refused'), ('NO_RESPONSE','No response yet')]
+class Submission(models.Model):
+    dateSubmission = models.DateField('Inscription Date', blank=False, null=datetime.datetime.now)
+    film = models.ForeignKey(Film, on_delete=models.CASCADE)
+    festival = models.ForeignKey(Festival, on_delete=models.CASCADE) 
+    isCompetitive = models.BooleanField('is Part of festival competitive selection?',default=False, blank=False)
+    response = models.CharField( default='NO_RESPONSE' , max_length=30, choices=MY_CHOICES)  
+    responseDate = models.DateField('Response Date', blank=True, null=True)
+    def __str__(self):
+        return '{} / {}'.format(self.film.name, self.festival.name) 
+    def clean(self):
+        if self.responseDate is not None and self.response == 'NO_RESPONSE':
+            raise ValidationError("Specify what is the response. Selectioned or Refused? ")    
+
+
+
