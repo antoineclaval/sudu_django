@@ -63,6 +63,7 @@ Default admin creds : admin/unsecure
 - prepare DB  migration ```$ docker-compose exec web python manage.py makemigrations```
 - apply migration ```$ docker-compose exec web python manage.py migrate --noinput```
 - django shell ```docker-compose exec web python manage.py shell```
+- django create super user ```docker-compose exec web python manage.py createsuperuser``` 
 
 ## Interact with the PostGres Instance
 
@@ -86,6 +87,7 @@ $ docker-compose -f docker-compose.prod.yml exec web python manage.py migrate --
 ## Docker schenanigans 
 
 - get ID of running container. ```docker ps -qf name=sudu_django_web```
+- basic disk-usage ```docker system df -v```
 - See : build-docker.sh
 
 
