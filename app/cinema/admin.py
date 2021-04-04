@@ -48,7 +48,7 @@ class FilmFilter(AutocompleteFilter):
 class SubmissionAdmin(ImportExportModelAdmin):
     model = Submission
     search_fields = ['film__name', 'festival__name', 'response', 'responseDate', 'dateSubmission']
-    list_display = ['festival', 'film', 'dateSubmission', 'response', 'responseDate', 'get_isCompetitive', 'get_country', 'get_month_occurence']
+    list_display = ['festival', 'film', 'Fee_euros','dateSubmission', 'response', 'responseDate', 'get_isCompetitive', 'get_country', 'get_month_occurence']
     #list_filter = [FestivalFilter, FilmFilter]
     list_filter = ('dateSubmission','response', 'responseDate')
     autocomplete_fields = ['festival', 'film']
@@ -69,6 +69,9 @@ class SubmissionAdmin(ImportExportModelAdmin):
         return obj.festival.month_occurence
     get_month_occurence.admin_order_field  = 'festival__month_occurence'  
     get_month_occurence.short_description = 'Month Festival' 
+
+    def Fee_euros(self, obj):
+        return '%.2f EUR' % obj.fee
 
 class ProjectionAdmin(ImportExportModelAdmin):
     search_fields = ['location', 'film__name']
