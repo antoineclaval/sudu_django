@@ -18,5 +18,5 @@ django-import-export==2.5.0
 lxml>=4.6.3
 docxtpl==0.11.1
 python-docx==0.8.10
-babel==2.8.0
+babel==2.9.1
 django-solo==1.1.3
