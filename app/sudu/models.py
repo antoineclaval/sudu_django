@@ -7,9 +7,9 @@ from solo.models import SingletonModel
 
 
 class G8Countries(Countries):
-    override = [
-        ('EU', _('European Union'))
-    ]
+    override = {
+        'EU': _('European Union'),
+    }
 
 
 class Language(models.Model):
@@ -41,12 +41,10 @@ class Language(models.Model):
                                         verbose_name='sorting order',
                                         help_text='increase to show at top of the list')
 
+    def __str__(self):
+        return '%s (%s)' % (self.name, self.name_local)
 
-def __str__(self):
-    return '%s (%s)' % (self.name, self.name_local)
-
-
-class Meta:
-    verbose_name = 'language'
-    verbose_name_plural = 'languages'
-    ordering = '-sorting', 'name', 'isocode', 
+    class Meta:
+        verbose_name = 'language'
+        verbose_name_plural = 'languages'
+        ordering = '-sorting', 'name', 'isocode',

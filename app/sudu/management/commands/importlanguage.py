@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from app.sudu.models import Language
+from sudu.models import Language
 from django.conf.locale import LANG_INFO
 
 

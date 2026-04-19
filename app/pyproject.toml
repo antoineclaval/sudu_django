@@ -1,0 +1,23 @@
+[project]
+name = "sudu-django"
+version = "1.0.0"
+description = "Film distribution backoffice for www.sudu.film"
+requires-python = ">=3.13"
+
+dependencies = [
+    "Django>=5.2,<5.3",
+    "gunicorn>=23.0",
+    "psycopg[binary]>=3.2",
+    "django-grappelli>=4.0.3",
+    "django-countries>=7.6",
+    "Pillow>=11.0",
+    "django-imagekit>=6.0",
+    "django-extensions>=3.2",
+    "django-import-export>=4.0",
+    "lxml>=5.0",
+    "docxtpl>=0.18",
+    "python-docx>=1.1",
+    "babel>=2.16",
+    "django-solo>=2.3",
+    "Werkzeug>=3.1",
+]

@@ -1,37 +1,31 @@
-# pull official base image
-FROM python:3.8.0-alpine
+FROM python:3.13-alpine
 
-# set work directory
 WORKDIR /usr/src/app
 
-# set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# install dependencies
-RUN pip install --upgrade pip
+# Install UV
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# install psycopg2 & Pillow dependencies & python-docx
-
+# Install system dependencies for psycopg, Pillow, lxml
 RUN apk update \
     && apk add --virtual build-deps gcc python3-dev musl-dev libc-dev libxslt-dev \
-    && apk add postgresql \
     && apk add postgresql-dev \
-    && pip install psycopg2 \
     && apk add jpeg-dev zlib-dev libjpeg \
-    && apk add libxslt
+    && apk add libxslt libpq
 
-COPY ./requirements.txt /usr/src/app/requirements.txt
-RUN pip install -r requirements.txt
+# Copy dependency file and install
+COPY ./pyproject.toml .
+RUN uv pip install --system -r pyproject.toml
 
-# Delete virual build dir 
+# Delete virtual build deps
 RUN apk del build-deps
 
-# copy entrypoint.sh
+# Copy entrypoint
 COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
 
-# copy project
+# Copy project
 COPY . /usr/src/app/
 
-# run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

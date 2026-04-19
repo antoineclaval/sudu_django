@@ -1,9 +1,10 @@
 .vscode
 app/env
 .env.dev
+.env.local
 .env.prod
 .env.prod.db
-
+CLAUDE.md
 app/mediafiles/*
 
 #Useless crap
@@ -19,6 +20,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+.venv/
 build/
 develop-eggs/
 dist/

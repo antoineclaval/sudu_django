@@ -43,12 +43,12 @@ class SiteConfiguration(SingletonModel):
 
 
 class G8Countries(Countries):
-    override = [
-        ('AN', _('Antilles')),
-        ('KO', _('Kosovo')),
-        ('RA', _('Republique d\'Abhkazia')),
-        ('WL', _('Wales')),
-    ]
+    override = {
+        'AN': _('Antilles'),
+        'KO': _('Kosovo'),
+        'RA': _('Republique d\'Abhkazia'),
+        'WL': _('Wales'),
+    }
 
 
 OCCURENCE_CHOICES = { 111: _('Year Round')}

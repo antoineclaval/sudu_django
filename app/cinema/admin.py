@@ -1,7 +1,6 @@
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from imagekit.admin import AdminThumbnail
-from admin_auto_filters.filters import AutocompleteFilter
 from django_countries.filters import CountryFilter
 
 from .models import Festival
@@ -36,14 +35,6 @@ class FilmAdmin(ImportExportModelAdmin):
 
 
     readonly_fields = ['image_display']  # this is for the change form
-
-class FestivalFilter(AutocompleteFilter):
-    title = 'Festival' # display title
-    field_name = 'festival' # name of the foreign key field
-
-class FilmFilter(AutocompleteFilter):
-    title = 'Film' # display title
-    field_name = 'film' # name of the foreign key field
 
 class SubmissionAdmin(ImportExportModelAdmin):
     model = Submission

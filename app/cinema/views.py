@@ -1,11 +1,5 @@
-from django.shortcuts import render
-
-from django.shortcuts import render
-from django.core.files.storage import FileSystemStorage
-
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-
 
 from .models import Film
 from .models import Submission
@@ -20,30 +14,14 @@ import datetime
 from sudu.settings import MEDIA_ROOT
 from babel.dates import format_date, format_datetime, format_time
 
-from io import StringIO
 from io import BytesIO
 from zipfile import ZipFile
 
-import json
 import calendar
 from django.forms import model_to_dict
 
-
 from django.contrib.auth.decorators import login_required
 
-
-def image_upload(request):
-    if request.method == "POST" and request.FILES["image_file"]:
-        image_file = request.FILES["image_file"]
-        fs = FileSystemStorage()
-        filename = fs.save(image_file.name, image_file)
-        image_url = fs.url(filename)
-        
-        print(image_url)
-        return render(request, "upload.html", {
-            "image_url": image_url
-        })
-    return render(request, "upload.html")
 
 def generateZipReport(request, year, month_id):
     response = HttpResponse(content_type='application/zip')
