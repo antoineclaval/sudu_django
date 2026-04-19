@@ -22,7 +22,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 # Lint
 RUN uv pip install --system flake8
 COPY . /usr/src/app/
-RUN flake8 --ignore=E501,F401 .
+RUN flake8 .
 
 # Build wheels
 COPY ./pyproject.toml .

@@ -7,7 +7,8 @@ from .models import Festival
 
 from docxtpl import DocxTemplate
 
-import os, locale
+import os
+import locale
 from datetime import date
 import time
 import datetime
