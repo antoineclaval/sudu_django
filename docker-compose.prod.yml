@@ -3,7 +3,7 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile.prod
-    command: gunicorn sudu.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn sudu.wsgi:application --bind 0.0.0.0:8000 --timeout 60
     volumes:
       - static_files:/home/app/web/staticfiles
       - media_files:/home/app/web/mediafiles
