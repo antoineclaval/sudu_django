@@ -62,6 +62,8 @@ class SubmissionAdmin(ImportExportModelAdmin):
     get_month_occurence.short_description = 'Month Festival' 
 
     def Fee_euros(self, obj):
+        if obj.fee is None:
+            return '-'
         return '%.2f EUR' % obj.fee
 
 class ProjectionAdmin(ImportExportModelAdmin):
