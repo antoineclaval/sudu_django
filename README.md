@@ -108,10 +108,44 @@ Check that the 5432 port is mapped to the localmachine ( ```0.0.0.0:5432->5432/t
 
 ## Production deployment
 
+### Initial setup (Digital Ocean droplet, Ubuntu 24.04)
+
 ```bash
-podman compose -f docker-compose.prod.yml up -d --build
-podman compose -f docker-compose.prod.yml exec web python manage.py migrate --noinput
+git clone <repo> /opt/sudu_django
+cd /opt/sudu_django
+bash deploy/setup-droplet.sh
 ```
+
+The setup script installs Docker, configures UFW + fail2ban, generates env files, builds the stack, and installs a systemd service (`sudu-django`).
+
+### Managing the application
+
+```bash
+systemctl start sudu-django      # start the stack
+systemctl stop sudu-django       # stop the stack
+systemctl restart sudu-django    # restart (e.g. after a deploy)
+systemctl status sudu-django     # check if running
+```
+
+Containers auto-restart on crash (`restart: unless-stopped`). The systemd service brings them back on server reboot.
+
+### Logs
+
+```bash
+journalctl -u sudu-django              # systemd-level logs
+docker compose -f docker-compose.prod.yml logs -f    # application logs
+docker compose -f docker-compose.prod.yml logs -f web # web container only
+```
+
+### Deploying updates
+
+```bash
+cd /opt/sudu_django
+git pull
+bash deploy/update-droplet.sh
+```
+
+This rebuilds images, restarts via systemd, runs migrations, and collects static files.
 
 ## Dependencies
 

@@ -68,6 +68,24 @@ else
     info "Docker installed: $(docker --version)"
 fi
 
+# Configure Docker log rotation (default json-file driver has no limit)
+if [ ! -f /etc/docker/daemon.json ]; then
+    info "Configuring Docker log rotation..."
+    cat > /etc/docker/daemon.json << 'EOF'
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}
+EOF
+    systemctl restart docker
+    info "Docker log rotation configured (10MB x 3 files per container)"
+else
+    warn "/etc/docker/daemon.json already exists, skipping log rotation config"
+fi
+
 # ---------------------------------------------------------------------------
 # 3. Firewall (UFW)
 # ---------------------------------------------------------------------------
@@ -190,8 +208,13 @@ docker compose -f "$COMPOSE_FILE" exec web python manage.py collectstatic --noin
 # ---------------------------------------------------------------------------
 # 10. Create superuser (interactive)
 # ---------------------------------------------------------------------------
-info "Creating admin superuser..."
-docker compose -f "$COMPOSE_FILE" exec web python manage.py createsuperuser
+if docker compose -f "$COMPOSE_FILE" exec web python manage.py shell -c \
+    "from django.contrib.auth import get_user_model; exit(0 if get_user_model().objects.filter(is_superuser=True).exists() else 1)"; then
+    info "Superuser already exists, skipping"
+else
+    info "Creating admin superuser..."
+    docker compose -f "$COMPOSE_FILE" exec web python manage.py createsuperuser
+fi
 
 # ---------------------------------------------------------------------------
 # 11. Summary
