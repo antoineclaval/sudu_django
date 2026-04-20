@@ -93,7 +93,37 @@ systemctl start fail2ban
 info "fail2ban active"
 
 # ---------------------------------------------------------------------------
-# 5. Generate environment files (if they don't exist)
+# 5. systemd service unit
+# ---------------------------------------------------------------------------
+info "Installing systemd service..."
+cat > /etc/systemd/system/sudu-django.service << 'EOF'
+[Unit]
+Description=sudu-django Docker Compose Application
+Requires=docker.service
+After=docker.service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/sudu_django
+ExecStart=/usr/bin/docker compose -f docker-compose.prod.yml up -d
+ExecStop=/usr/bin/docker compose -f docker-compose.prod.yml down
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sudu-django
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable sudu-django.service
+info "systemd service installed and enabled (will start on boot)"
+
+# ---------------------------------------------------------------------------
+# 6. Generate environment files (if they don't exist)
 # ---------------------------------------------------------------------------
 cd "$PROJECT_DIR"
 
@@ -133,35 +163,38 @@ EOF
 fi
 
 # ---------------------------------------------------------------------------
-# 6. Build and start containers
+# 7. Build and start containers
 # ---------------------------------------------------------------------------
-info "Building and starting containers (this may take a few minutes)..."
-docker compose -f "$COMPOSE_FILE" up -d --build
+info "Building images (this may take a few minutes)..."
+docker compose -f "$COMPOSE_FILE" build
+
+info "Starting containers via systemd..."
+systemctl start sudu-django
 
 # Wait for web container to be healthy
 info "Waiting for containers to be ready..."
 sleep 5
 
 # ---------------------------------------------------------------------------
-# 7. Run migrations (also handled by entrypoint, but explicit is safer)
+# 8. Run migrations (also handled by entrypoint, but explicit is safer)
 # ---------------------------------------------------------------------------
 info "Running migrations..."
 docker compose -f "$COMPOSE_FILE" exec web python manage.py migrate --noinput
 
 # ---------------------------------------------------------------------------
-# 8. Collect static files
+# 9. Collect static files
 # ---------------------------------------------------------------------------
 info "Collecting static files..."
 docker compose -f "$COMPOSE_FILE" exec web python manage.py collectstatic --noinput
 
 # ---------------------------------------------------------------------------
-# 9. Create superuser (interactive)
+# 10. Create superuser (interactive)
 # ---------------------------------------------------------------------------
 info "Creating admin superuser..."
 docker compose -f "$COMPOSE_FILE" exec web python manage.py createsuperuser
 
 # ---------------------------------------------------------------------------
-# 10. Summary
+# 11. Summary
 # ---------------------------------------------------------------------------
 DROPLET_IP=$(curl -s -4 ifconfig.me || echo "<unknown>")
 
@@ -173,10 +206,13 @@ echo ""
 echo "  Admin:    http://${DROPLET_IP}/admin/"
 echo "  Reports:  http://${DROPLET_IP}/cinema/reports/"
 echo ""
+echo "  Service:     systemctl status sudu-django"
+echo "  Start:       systemctl start sudu-django"
+echo "  Stop:        systemctl stop sudu-django"
+echo "  Restart:     systemctl restart sudu-django"
+echo "  Logs:        journalctl -u sudu-django"
 echo "  Containers:  docker compose -f $COMPOSE_FILE ps"
-echo "  Logs:        docker compose -f $COMPOSE_FILE logs -f"
-echo "  Restart:     docker compose -f $COMPOSE_FILE restart"
-echo "  Rebuild:     docker compose -f $COMPOSE_FILE up -d --build"
+echo "  App logs:    docker compose -f $COMPOSE_FILE logs -f"
 echo ""
 echo "  Firewall:    ufw status"
 echo "  fail2ban:    systemctl status fail2ban"

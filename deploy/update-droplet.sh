@@ -15,8 +15,14 @@ info() { echo -e "${GREEN}[INFO]${NC} $1"; }
 
 cd "$PROJECT_DIR"
 
-info "Rebuilding and restarting containers..."
-docker compose -f "$COMPOSE_FILE" up -d --build
+info "Rebuilding images..."
+docker compose -f "$COMPOSE_FILE" build
+
+info "Restarting via systemd..."
+systemctl restart sudu-django
+
+info "Waiting for containers to be ready..."
+sleep 5
 
 info "Running migrations..."
 docker compose -f "$COMPOSE_FILE" exec web python manage.py migrate --noinput
@@ -24,5 +30,7 @@ docker compose -f "$COMPOSE_FILE" exec web python manage.py migrate --noinput
 info "Collecting static files..."
 docker compose -f "$COMPOSE_FILE" exec web python manage.py collectstatic --noinput
 
-info "Done. Containers:"
+info "Done. Service status:"
+systemctl status sudu-django --no-pager
+echo ""
 docker compose -f "$COMPOSE_FILE" ps
