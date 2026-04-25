@@ -5,7 +5,6 @@ from .models import Film
 from .models import Submission
 from .models import Festival
 from .models import Projection
-from .models import Projection
 from django.db.models import Count, Q, Sum, Min
 
 from docxtpl import DocxTemplate
