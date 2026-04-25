@@ -22,6 +22,7 @@ from io import BytesIO
 from zipfile import ZipFile
 
 import calendar
+import json
 from django.forms import model_to_dict
 
 from django.contrib.auth.decorators import login_required
@@ -64,6 +65,34 @@ def index(request):
     year, month_id = map(int, time.strftime("%Y %m").split())
     return HttpResponseRedirect(F'/cinema/reports/{year}/{month_id}/')
 
+def _to_monthly(qs, month_key):
+    by_month = {row[month_key]: row['count'] for row in qs}
+    return [by_month.get(m, 0) for m in range(1, 13)]
+
+
+@login_required(login_url='/admin/login')
+def byYear(request, year):
+    sent_qs = (
+        Submission.objects
+        .filter(dateSubmission__year=year)
+        .values('dateSubmission__month')
+        .annotate(count=Count('id'))
+    )
+    selected_qs = (
+        Submission.objects
+        .filter(responseDate__year=year, response='SELECTIONED')
+        .values('responseDate__month')
+        .annotate(count=Count('id'))
+    )
+    template = loader.get_template('year.html')
+    context = {
+        'year': year,
+        'sent_data': json.dumps(_to_monthly(sent_qs, 'dateSubmission__month')),
+        'selected_data': json.dumps(_to_monthly(selected_qs, 'responseDate__month')),
+    }
+    return HttpResponse(template.render(context, request))
+
+
 @login_required(login_url='/admin/login')
 def byMonth(request, year, month_id):
     template = loader.get_template('index.html')
@@ -77,7 +106,10 @@ def byMonth(request, year, month_id):
         ),
         'current_month_name': calendar.month_name[month_id],
         'current_year': time.strftime("%Y"),
-
+        'total_sent_this_month': Submission.objects.filter(
+            dateSubmission__year=year,
+            dateSubmission__month=month_id,
+        ).count(),
     }
     return HttpResponse(template.render(context, request))
 

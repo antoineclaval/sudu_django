@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://andybrewer.github.io/mvp/mvp.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudu {{ year }} Stats</title>
+</head>
+<body>
+    <h3 style="text-align:center;">Stats {{ year }}</h3>
+    <main>
+        <div style="max-width:900px; margin:0 auto;">
+            <canvas id="yearChart"></canvas>
+        </div>
+        <div style="text-align:center; margin-top:2rem;">
+            <a href="../reports/">Back to current month</a>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <script>
+      var labels = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      new Chart(document.getElementById('yearChart'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Sent to festival',
+              data: {{ sent_data }},
+              backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            },
+            {
+              label: 'Selected',
+              data: {{ selected_data }},
+              backgroundColor: 'rgba(75, 192, 100, 0.7)',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: 'Submissions & Selections — {{ year }}' }
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } }
+          }
+        }
+      });
+    </script>
+</body>
+</html>
