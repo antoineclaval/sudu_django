@@ -42,8 +42,8 @@
                   <tr>
                     <td><input type="checkbox" value="{{ movie.id }}" name="movie"></td>
                     <td> <a href="{{ movie.id }}">{{ movie.name }} </a>  </td>
-                    <td>-</td>
-                    <td>-</td>
+                    <td>{{ movie.total_sent }}</td>
+                    <td>{{ movie.sent_this_month }}</td>
                     <td><a href="{{ movie.id }}/docx/fr">FR </a></td>
                     <td><a href="{{ movie.id }}/docx/en">EN</a> </td>
                   </tr>

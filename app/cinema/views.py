@@ -6,6 +6,7 @@ from .models import Submission
 from .models import Festival
 from .models import Projection
 from .models import Projection
+from django.db.models import Count, Q
 
 from docxtpl import DocxTemplate
 
@@ -67,7 +68,13 @@ def index(request):
 def byMonth(request, year, month_id):
     template = loader.get_template('index.html')
     context = {
-        'movies_list': Film.objects.all(), #Submission.objects.filter(film_id = 3).count()
+        'movies_list': Film.objects.annotate(
+            total_sent=Count('submission'),
+            sent_this_month=Count('submission', filter=Q(
+                submission__dateSubmission__year=year,
+                submission__dateSubmission__month=month_id,
+            ))
+        ),
         'current_month_name': calendar.month_name[month_id],
         'current_year': time.strftime("%Y"),
 
