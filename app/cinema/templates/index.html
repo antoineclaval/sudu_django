@@ -15,8 +15,15 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function() {
-        // document.querySelector('option[value="11"]').selected = true
-        // window.location.href 
+        document.getElementById('hideInactive').addEventListener('change', function () {
+          var hide = this.checked;
+          document.querySelectorAll('table tr').forEach(function (row) {
+            var cell = row.querySelector('td:nth-child(4)');
+            if (cell && cell.textContent.trim() === '0') {
+              row.style.display = hide ? 'none' : '';
+            }
+          });
+        });
       });
     </script>
 </head>
@@ -26,6 +33,11 @@
     <main>
 
       <form action="zip">
+        <div style="text-align:center; margin-bottom: 0.5rem;">
+          <label>
+            <input type="checkbox" id="hideInactive"> Hide films with no activity in {{ current_month_name }}
+          </label>
+        </div>
         <div>
             <table style="margin-left:auto;margin-right:auto;">
                 <thead>
