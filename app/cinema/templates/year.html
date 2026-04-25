@@ -13,7 +13,9 @@
             <canvas id="yearChart"></canvas>
         </div>
         <div style="text-align:center; margin-top:2rem;">
-            <a href="../reports/">Back to current month</a>
+            <a href="/cinema/reports/">All-time report</a>
+            &nbsp;·&nbsp;
+            <a href="/cinema/reports/last/">Current month</a>
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
@@ -26,12 +28,12 @@
           datasets: [
             {
               label: 'Sent to festival',
-              data: {{ sent_data }},
+              data: {{ sent_data|safe }},
               backgroundColor: 'rgba(54, 162, 235, 0.7)',
             },
             {
               label: 'Selected',
-              data: {{ selected_data }},
+              data: {{ selected_data|safe }},
               backgroundColor: 'rgba(75, 192, 100, 0.7)',
             }
           ]

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://andybrewer.github.io/mvp/mvp.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudu — All-time Report</title>
+    <style>
+        .kpi-row { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin: 1.5rem 0; }
+        .kpi { text-align: center; padding: 1rem 2rem; border: 1px solid #ccc; border-radius: 6px; min-width: 140px; }
+        .kpi strong { display: block; font-size: 2rem; }
+        .kpi span { font-size: 0.85rem; color: #555; }
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
+        .chart-box { position: relative; }
+        @media (max-width: 700px) { .chart-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <h3 style="text-align:center;">All-time Report</h3>
+    <main>
+
+        <div class="kpi-row">
+            <div class="kpi">
+                <strong>{{ total }}</strong>
+                <span>Total Submissions</span>
+            </div>
+            <div class="kpi">
+                <strong>{{ unique_festivals }}</strong>
+                <span>Festivals Reached</span>
+            </div>
+            <div class="kpi">
+                <strong>{{ selection_rate }}%</strong>
+                <span>Selection Rate</span>
+            </div>
+            <div class="kpi">
+                <strong>{{ total_fees|floatformat:0 }} €</strong>
+                <span>Total Fees Paid</span>
+            </div>
+        </div>
+
+        <div style="max-width:900px; margin:0 auto;">
+            <canvas id="yearChart"></canvas>
+        </div>
+
+        <div class="chart-grid" style="max-width:900px; margin:2rem auto 0;">
+            <div>
+                <h4 style="text-align:center;">Top 10 Films</h4>
+                <table>
+                    <thead>
+                        <tr><th>Film</th><th>Submissions</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for film in top_films %}
+                        <tr>
+                            <td>{{ film.name }}</td>
+                            <td>{{ film.sub_count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="chart-box">
+                <h4 style="text-align:center;">By Film Type</h4>
+                <canvas id="typeChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h4 style="text-align:center;">Top 10 Festival Countries</h4>
+                <canvas id="countryChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h4 style="text-align:center;">African vs Non-African Festivals</h4>
+                <canvas id="africanChart"></canvas>
+            </div>
+        </div>
+
+        <div style="text-align:center; margin-top:2rem;">
+            <a href="last/">Current month report</a>
+        </div>
+
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <script>
+      new Chart(document.getElementById('yearChart'), {
+        type: 'bar',
+        data: {
+          labels: {{ year_labels|safe }},
+          datasets: [
+            { label: 'Sent to festival', data: {{ sent_by_year|safe }}, backgroundColor: 'rgba(54,162,235,0.7)' },
+            { label: 'Selected', data: {{ selected_by_year|safe }}, backgroundColor: 'rgba(75,192,100,0.7)' }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: 'Submissions & Selections per Year' }
+          },
+          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+      });
+
+      new Chart(document.getElementById('typeChart'), {
+        type: 'doughnut',
+        data: {
+          labels: {{ type_labels|safe }},
+          datasets: [{ data: {{ type_counts|safe }}, backgroundColor: ['rgba(54,162,235,0.7)','rgba(255,159,64,0.7)','rgba(153,102,255,0.7)','rgba(255,205,86,0.7)'] }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      });
+
+      new Chart(document.getElementById('countryChart'), {
+        type: 'bar',
+        data: {
+          labels: {{ country_labels|safe }},
+          datasets: [{ label: 'Submissions', data: {{ country_counts|safe }}, backgroundColor: 'rgba(255,159,64,0.7)' }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          plugins: { legend: { display: false }, title: { display: false } },
+          scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+      });
+
+      new Chart(document.getElementById('africanChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Non-African', 'African'],
+          datasets: [{ data: {{ african_counts|safe }}, backgroundColor: ['rgba(54,162,235,0.7)','rgba(255,99,132,0.7)'] }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      });
+    </script>
+</body>
+</html>

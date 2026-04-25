@@ -6,7 +6,7 @@ from .models import Submission
 from .models import Festival
 from .models import Projection
 from .models import Projection
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum, Min
 
 from docxtpl import DocxTemplate
 
@@ -58,6 +58,82 @@ def generateZipReport(request, year, month_id):
     in_memory_zip.seek(0)    
     response.write(in_memory_zip.read())
     return response
+
+
+FILM_TYPE_LABELS = {'DOCU': 'Documentaire', 'FICTION': 'Fiction', 'SHORT': 'Court-Métrage', 'XP': 'Experimental'}
+
+
+@login_required(login_url='/admin/login')
+def globalReport(request):
+    current_year = int(time.strftime("%Y"))
+
+    agg = Submission.objects.aggregate(
+        total=Count('id'),
+        total_selected=Count('id', filter=Q(response='SELECTIONED')),
+        total_fees=Sum('fee'),
+    )
+    total = agg['total'] or 0
+    total_selected = agg['total_selected'] or 0
+    total_fees = agg['total_fees'] or 0
+    selection_rate = round(total_selected / total * 100, 1) if total else 0
+    unique_festivals = Submission.objects.values('festival').distinct().count()
+
+    min_year = Submission.objects.aggregate(m=Min('dateSubmission__year'))['m'] or current_year
+    year_range = list(range(min_year, current_year + 1))
+
+    sent_by_year_map = {
+        r['dateSubmission__year']: r['count']
+        for r in Submission.objects.values('dateSubmission__year').annotate(count=Count('id'))
+    }
+    selected_by_year_map = {
+        r['responseDate__year']: r['count']
+        for r in Submission.objects.filter(response='SELECTIONED').values('responseDate__year').annotate(count=Count('id'))
+    }
+    sent_by_year = [sent_by_year_map.get(y, 0) for y in year_range]
+    selected_by_year = [selected_by_year_map.get(y, 0) for y in year_range]
+
+    top_films = Film.objects.annotate(sub_count=Count('submission')).order_by('-sub_count')[:10]
+
+    country_qs = (
+        Submission.objects
+        .values('festival__country')
+        .annotate(count=Count('id'))
+        .order_by('-count')[:10]
+    )
+    country_labels = [r['festival__country'] for r in country_qs]
+    country_counts = [r['count'] for r in country_qs]
+
+    film_type_qs = (
+        Submission.objects
+        .values('film__filmType')
+        .annotate(count=Count('id'))
+    )
+    type_labels = [FILM_TYPE_LABELS.get(r['film__filmType'], r['film__filmType']) for r in film_type_qs]
+    type_counts = [r['count'] for r in film_type_qs]
+
+    african_map = {
+        r['festival__is_african']: r['count']
+        for r in Submission.objects.values('festival__is_african').annotate(count=Count('id'))
+    }
+    african_counts = [african_map.get(False, 0), african_map.get(True, 0)]
+
+    template = loader.get_template('all.html')
+    context = {
+        'total': total,
+        'unique_festivals': unique_festivals,
+        'selection_rate': selection_rate,
+        'total_fees': total_fees,
+        'year_labels': json.dumps(year_range),
+        'sent_by_year': json.dumps(sent_by_year),
+        'selected_by_year': json.dumps(selected_by_year),
+        'top_films': top_films,
+        'country_labels': json.dumps(country_labels),
+        'country_counts': json.dumps(country_counts),
+        'type_labels': json.dumps(type_labels),
+        'type_counts': json.dumps(type_counts),
+        'african_counts': json.dumps(african_counts),
+    }
+    return HttpResponse(template.render(context, request))
 
 
 @login_required(login_url='/admin/login')

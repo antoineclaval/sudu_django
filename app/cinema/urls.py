@@ -3,7 +3,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('reports/', views.index, name='index'),
+    path('reports/', views.globalReport, name='globalReport'),
+    path('reports/last/', views.index, name='index'),
     path('reports/<int:year>/', views.byYear, name='byYear'),
     path('reports/<int:year>/<int:month_id>/', views.byMonth, name='byMonth'),
     path('reports/<int:year>/<int:month_id>/<int:film_id>/', views.inscriptionByMonthAndFilm, name='inscriptionView'),
